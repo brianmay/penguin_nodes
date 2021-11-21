@@ -1,0 +1,19 @@
+<h1><%= gettext "Welcome to %{name}!", name: "PenguinNodes" %></h1>
+<p>Protect your money from energy companies.</p>
+
+<% user = PenguinNodesWeb.Auth.current_user(@conn) %>
+<%= if user != nil do %>
+  <ul>
+    <li>
+      <%= live_redirect "Telsa", to: Routes.tesla_path(@conn, :index) %>
+    </li>
+    <li>
+      <%= live_redirect "Aemo", to: Routes.aemo_path(@conn, :index) %>
+    </li>
+    <li>
+      <%= link "Logout", to: Routes.page_path(@conn, :logout), method: :post %>
+    </li>
+  </ul>
+<% else %>
+  Please <%= live_redirect("Login", to: Routes.page_path(@conn, :login)) %>.
+<% end %>

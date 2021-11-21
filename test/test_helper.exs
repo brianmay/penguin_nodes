@@ -1,0 +1,7 @@
+Application.ensure_all_started(:tzdata)
+Application.ensure_all_started(:ecto)
+# Application.ensure_all_started(PenguinNodes.Repo, :temporary)
+{:ok, _} = PenguinNodesWeb.Endpoint.start_link()
+{:ok, _} = PenguinNodes.Repo.start_link()
+Ecto.Adapters.SQL.Sandbox.mode(PenguinNodes.Repo, :manual)
+ExUnit.start()

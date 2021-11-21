@@ -1,0 +1,16 @@
+name: Build and Deploy to Docker Hub
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    name: Setup, Build, Test
+    uses: brianmay/workflows/.github/workflows/elixir.yaml@6694b3f1e1250158f19273539634d867946c94b9
+
+  push:
+    name: Push
+    uses: brianmay/workflows/.github/workflows/docker.yaml@6694b3f1e1250158f19273539634d867946c94b9
+    needs:
+      - test
