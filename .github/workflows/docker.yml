@@ -8,6 +8,9 @@ jobs:
   test:
     name: Setup, Build, Test
     uses: brianmay/workflows/.github/workflows/elixir.yaml@b7166456591b3ce36895b52acfa634b4ef33ad5f
+    with:
+      mix_cache_postfix: ""
+      plts_cache_postfix: "-1"
 
   push:
     name: Push
