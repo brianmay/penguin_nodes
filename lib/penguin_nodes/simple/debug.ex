@@ -2,8 +2,8 @@ defmodule PenguinNodes.Simple.Debug do
   use PenguinNodes.Nodes.NodeModule
 
   alias PenguinNodes.Nodes.Node
-  alias PenguinNodes.Nodes.Nodes
   alias PenguinNodes.Nodes.NodeModule
+  alias PenguinNodes.Nodes.Nodes
 
   require Logger
 

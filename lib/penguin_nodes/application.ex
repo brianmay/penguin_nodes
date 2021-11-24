@@ -30,10 +30,6 @@ defmodule PenguinNodes.Application do
       # Start the endpoint when the application starts
       PenguinNodesWeb.Endpoint,
       {Phoenix.PubSub, [name: PenguinNodes.PubSub, adapter: Phoenix.PubSub.PG2]},
-      # Start Aemo process
-      {PenguinNodes.Aemo, []},
-      # Start MQTT processes
-      {PenguinNodes.Tesla, []},
       {MqttPotion.Connection,
        name: PenguinNodes.Mqtt,
        host: mqtt_host,
@@ -51,9 +47,7 @@ defmodule PenguinNodes.Application do
          cacertfile: ca_cert_file
        ],
        handler: PenguinNodes.MqttHandler,
-       subscriptions: [
-         {"teslamate/cars/1/#", 0}
-       ]}
+       subscriptions: []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
