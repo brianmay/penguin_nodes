@@ -6,7 +6,6 @@ defmodule PenguinNodes.Nodes.Nodes do
   alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
-  alias PenguinNodes.Nodes.Output
   alias PenguinNodes.Nodes.Wire
 
   @type t :: %__MODULE__{
@@ -24,16 +23,14 @@ defmodule PenguinNodes.Nodes.Nodes do
   def build(%__MODULE__{} = nodes) do
     outputs_map =
       Enum.reduce(nodes.map, %{}, fn {_node_id, %Node{} = node}, outputs_map ->
-        Enum.reduce(node.inputs, outputs_map, fn {key, outputs}, outputs_map ->
-          Enum.reduce(outputs, outputs_map, fn %Output{} = output, outputs_map ->
-            forward = %Forward{
-              id: key,
-              node_id: node.node_id
-            }
+        Node.reduce_inputs(node, outputs_map, fn key, output, outputs_map ->
+          forward = %Forward{
+            id: key,
+            node_id: node.node_id
+          }
 
-            Map.update(outputs_map, {output.node_id, output.id}, [forward], fn value ->
-              [forward | value]
-            end)
+          Map.update(outputs_map, {output.node_id, output.id}, [forward], fn value ->
+            [forward | value]
           end)
         end)
       end)

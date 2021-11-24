@@ -17,4 +17,14 @@ defmodule PenguinNodes.Nodes.Node do
   defstruct @enforce_keys
 
   @type data :: map()
+
+  @type reduce_inputs_fn :: (key :: atom(), output :: Output.t(), acc :: any() -> any())
+  @spec reduce_inputs(node :: t(), acc :: any(), function :: reduce_inputs_fn()) :: any()
+  def reduce_inputs(%__MODULE__{} = node, acc, function) do
+    Enum.reduce(node.inputs, acc, fn {key, outputs}, acc ->
+      Enum.reduce(outputs, acc, fn %Output{} = output, acc ->
+        function.(key, output, acc)
+      end)
+    end)
+  end
 end
