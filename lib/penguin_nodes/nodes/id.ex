@@ -2,10 +2,10 @@ defmodule PenguinNodes.Nodes.Id do
   @moduledoc """
   Generate guaranteed unique id values
   """
-  @type t :: reference()
+  @type t :: String.t()
 
   @spec get_next_id :: t()
   def get_next_id do
-    make_ref()
+    UUID.uuid4()
   end
 end
