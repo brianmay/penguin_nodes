@@ -1,6 +1,7 @@
 defmodule PenguinNodes.Simple.Debug do
   use PenguinNodes.Nodes.NodeModule
 
+  alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
   alias PenguinNodes.Nodes.Nodes
@@ -40,9 +41,9 @@ defmodule PenguinNodes.Simple.Debug do
     {:noreply, state}
   end
 
-  @spec call(value :: NodeModule.input_value(), opts :: Options.t()) :: Nodes.t()
-  def call(value, %Options{} = opts) do
-    {_node_id, nodes} = NodeModule.call(__MODULE__, %{value: value}, opts)
-    nodes
+  @spec call(value :: NodeModule.input_value(), opts :: Options.t(), node_id :: Id.t()) ::
+          Nodes.t()
+  def call(value, %Options{} = opts, node_id) do
+    NodeModule.call(__MODULE__, %{value: value}, opts, node_id)
   end
 end

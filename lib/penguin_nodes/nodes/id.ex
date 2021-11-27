@@ -2,10 +2,10 @@ defmodule PenguinNodes.Nodes.Id do
   @moduledoc """
   Generate guaranteed unique id values
   """
-  @type t :: String.t()
+  @type t :: tuple()
 
-  @spec get_next_id :: t()
-  def get_next_id do
-    UUID.uuid4()
+  @spec id(root_id :: t(), id :: atom()) :: t()
+  def id(root_id, id) do
+    Tuple.append(root_id, id)
   end
 end

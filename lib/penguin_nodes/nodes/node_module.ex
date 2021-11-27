@@ -101,10 +101,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
     GenServer.start_link(__MODULE__, node)
   end
 
-  @spec call(module :: module(), inputs :: input_map(), opts :: map()) :: {Id.t(), Nodes.t()}
-  def call(module, inputs, opts) do
-    node_id = Id.get_next_id()
-
+  @spec call(module :: module(), inputs :: input_map(), opts :: map(), id :: Id.t()) :: Nodes.t()
+  def call(module, inputs, opts, node_id) do
     inputs =
       Enum.map(inputs, fn {key, input_value} ->
         case input_value do
@@ -126,12 +124,9 @@ defmodule PenguinNodes.Nodes.NodeModule do
       opts: opts
     }
 
-    nodes =
-      inputs
-      |> Enum.reduce(Nodes.new(), fn {_, wires}, nodes -> Nodes.merge(nodes, wires) end)
-      |> Nodes.add_node(node)
-
-    {node_id, nodes}
+    inputs
+    |> Enum.reduce(Nodes.new(), fn {_, wires}, nodes -> Nodes.merge(nodes, wires) end)
+    |> Nodes.add_node(node)
   end
 
   # # Server (callbacks)

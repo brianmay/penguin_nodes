@@ -59,8 +59,7 @@ defmodule PenguinNodes.MixProject do
       {:plugoid, git: "https://github.com/tanguilp/plugoid.git", branch: "conn_callback"},
       {:replug, "~> 0.1.0"},
       {:singleton,
-       git: "https://github.com/klacointe/singleton.git", branch: "FIX-more-than-three-singletons"},
-      {:uuid, "~> 1.1"}
+       git: "https://github.com/klacointe/singleton.git", branch: "FIX-more-than-three-singletons"}
     ]
   end
 

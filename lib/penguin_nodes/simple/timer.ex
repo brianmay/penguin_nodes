@@ -4,6 +4,7 @@ defmodule PenguinNodes.Simple.Timer do
   """
   use PenguinNodes.Nodes.NodeModule
 
+  alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
   alias PenguinNodes.Nodes.Wire
@@ -33,9 +34,9 @@ defmodule PenguinNodes.Simple.Timer do
     {:noreply, state}
   end
 
-  @spec call(opts :: Options.t()) :: Wire.t()
-  def call(%Options{} = opts) do
-    {node_id, nodes} = NodeModule.call(__MODULE__, %{}, opts)
+  @spec call(opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
+  def call(%Options{} = opts, node_id) do
+    nodes = NodeModule.call(__MODULE__, %{}, opts, node_id)
     Wire.new(nodes, node_id, :timer)
   end
 end
