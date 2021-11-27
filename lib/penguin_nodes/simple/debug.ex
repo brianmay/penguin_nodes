@@ -24,8 +24,15 @@ defmodule PenguinNodes.Simple.Debug do
   end
 
   @impl true
-  def handle_input(:value, data, state) do
+  def handle_input(:value, data, %NodeModule.State{} = state) do
+    data = %{
+      datetime: DateTime.utc_now(),
+      data: data,
+      node_id: state.node_id
+    }
+
     Logger.debug("DEBUG: #{inspect(data)}")
+    PenguinNodesWeb.Endpoint.broadcast!("logs", "meow", data)
     {:noreply, state}
   end
 

@@ -17,6 +17,9 @@
         <% user = assigns[:current_user] %>
         <% active = assigns[:active] %>
         <%= if user != nil do %>
+            <li class="nav-item">
+                <%= live_redirect("Logs", to: Routes.logs_path(@socket, :index), class: link_class(active, "logs")) %>
+            </li>
             <%= if PenguinNodesWeb.Auth.user_is_admin?(user) do %>
                 <li class="nav-item">
                 <%= live_redirect("Dashboard", to: Routes.live_dashboard_path(@socket, :home), class: link_class(active, "dashboard")) %>
