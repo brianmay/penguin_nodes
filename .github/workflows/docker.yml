@@ -7,13 +7,13 @@ on:
 jobs:
   test:
     name: Setup, Build, Test
-    uses: brianmay/workflows/.github/workflows/elixir.yaml@b7166456591b3ce36895b52acfa634b4ef33ad5f
+    uses: brianmay/workflows/.github/workflows/elixir.yaml@0ce1d9d5a79afc69af7e3887cf40a9cc67854f63
     with:
       mix_cache_postfix: ""
       plts_cache_postfix: "-1"
 
   push:
     name: Push
-    uses: brianmay/workflows/.github/workflows/docker.yaml@b7166456591b3ce36895b52acfa634b4ef33ad5f
+    uses: brianmay/workflows/.github/workflows/docker.yaml@0ce1d9d5a79afc69af7e3887cf40a9cc67854f63
     needs:
       - test
