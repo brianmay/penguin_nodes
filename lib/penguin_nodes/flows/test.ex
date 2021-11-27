@@ -20,8 +20,6 @@ defmodule PenguinNodes.Flows.Test do
 
   @spec test_flow() :: Macro.t()
   defmacro test_flow do
-    quote do
-      unquote(__MODULE__).generate_test_flow()
-    end
+    Macro.escape(__MODULE__.generate_test_flow())
   end
 end
