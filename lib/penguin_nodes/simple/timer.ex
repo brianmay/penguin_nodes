@@ -23,7 +23,7 @@ defmodule PenguinNodes.Simple.Timer do
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
     state = %NodeModule.State{state | assigns: options}
-    :timer.send_interval(1000, :timer)
+    :timer.send_interval(10_000, :timer)
     {:ok, state}
   end
 
