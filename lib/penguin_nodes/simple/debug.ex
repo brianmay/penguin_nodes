@@ -25,10 +25,14 @@ defmodule PenguinNodes.Simple.Debug do
 
   @impl true
   def handle_input(:value, data, %NodeModule.State{} = state) do
+    {:ok, hostname} = :inet.gethostname()
+    hostname = to_string(hostname)
+
     data = %{
       datetime: DateTime.utc_now(),
       data: data,
-      node_id: state.node_id
+      node_id: state.node_id,
+      hostname: hostname
     }
 
     Logger.debug("DEBUG: #{inspect(data)}")
