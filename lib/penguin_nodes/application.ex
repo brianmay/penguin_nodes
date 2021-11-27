@@ -4,6 +4,17 @@ defmodule PenguinNodes.Application do
   @moduledoc false
 
   use Application
+  require PenguinNodes.Flows.Test
+
+  alias PenguinNodes.Flows.Test
+  alias PenguinNodes.Nodes.Node
+  alias PenguinNodes.Nodes.NodeModule
+  alias PenguinNodes.Nodes.Nodes
+
+  @spec nodes :: Nodes.t()
+  def nodes do
+    Test.test_flow()
+  end
 
   defp get_client_id do
     {:ok, hostname} = :inet.gethostname()
@@ -49,6 +60,10 @@ defmodule PenguinNodes.Application do
        handler: PenguinNodes.MqttHandler,
        subscriptions: []}
     ]
+
+    Enum.each(nodes().map, fn {_, %Node{} = node} ->
+      Singleton.start_child(NodeModule, node, node.node_id)
+    end)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

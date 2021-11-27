@@ -13,7 +13,7 @@ defmodule PenguinNodes.Simple.Timer do
     Options for the timer node
     """
     @type t :: %__MODULE__{
-            data: Node.data()
+            data: any()
           }
     @enforce_keys [:data]
     defstruct @enforce_keys

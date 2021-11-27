@@ -3,6 +3,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
   Wrapper genserver for nodes
   """
   use GenServer
+  require Logger
 
   alias PenguinNodes.Nodes.Forward
   alias PenguinNodes.Nodes.Id
@@ -61,19 +62,19 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @optional_callbacks handle_input: 3
 
-  @spec wait_for_pid(pid :: atom(), tries :: integer()) :: :ok
-  defp wait_for_pid(pid, tries \\ 3)
+  @spec wait_for_pid(node_id :: Id.t(), tries :: integer()) :: :ok | :error
+  defp wait_for_pid(node_id, tries \\ 3)
 
-  defp wait_for_pid(_pid, 0) do
+  defp wait_for_pid(_node_id, 0) do
     :error
   end
 
-  defp wait_for_pid(pid, tries) do
-    case Process.whereis(pid) do
-      nil ->
+  defp wait_for_pid(node_id, tries) do
+    case :global.whereis_name(node_id) do
+      :undefined ->
         IO.puts("sleeping #{tries}")
         Process.sleep(1000)
-        wait_for_pid(pid, tries - 1)
+        wait_for_pid(node_id, tries - 1)
 
       _pid ->
         :ok
@@ -86,8 +87,10 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
     Enum.each(outputs, fn
       %Forward{} = forward ->
-        wait_for_pid(forward.node_id)
-        GenServer.cast(forward.node_id, {:input, forward.id, data})
+        case wait_for_pid(forward.node_id) do
+          :ok -> GenServer.cast({:global, forward.node_id}, {:input, forward.id, data})
+          :error -> Logger.error("Cannot send message to node.")
+        end
     end)
 
     :ok
@@ -95,7 +98,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @spec start_link(Node.t()) :: {:ok, pid} | {:error, any()}
   def start_link(%Node{} = node) do
-    GenServer.start_link(__MODULE__, node, name: node.node_id)
+    GenServer.start_link(__MODULE__, node)
   end
 
   @spec call(module :: module(), inputs :: input_map(), opts :: map()) :: {Id.t(), Nodes.t()}

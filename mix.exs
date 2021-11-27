@@ -22,7 +22,7 @@ defmodule PenguinNodes.MixProject do
   def application do
     [
       mod: {PenguinNodes.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon]
+      extra_applications: [:logger, :runtime_tools, :os_mon, :crypto]
     ]
   end
 
@@ -57,7 +57,8 @@ defmodule PenguinNodes.MixProject do
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:plugoid, git: "https://github.com/tanguilp/plugoid.git", branch: "conn_callback"},
-      {:replug, "~> 0.1.0"}
+      {:replug, "~> 0.1.0"},
+      {:singleton, "~> 1.3.0"}
     ]
   end
 
