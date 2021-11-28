@@ -4,7 +4,6 @@ defmodule PenguinNodes.Application do
   @moduledoc false
 
   use Application
-  require PenguinNodes.Flows.Test
 
   alias PenguinNodes.Flows.Test
   alias PenguinNodes.Nodes.Node
@@ -13,7 +12,7 @@ defmodule PenguinNodes.Application do
 
   @spec nodes :: Nodes.t()
   def nodes do
-    Test.test_flow()
+    Test.generate_test_flow({})
   end
 
   defp get_client_id do

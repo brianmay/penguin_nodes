@@ -1,5 +1,25 @@
 <h1>Logs</h1>
 
-<%= for line <- @lines do%>
-    <p><%= inspect(line) %></p>
-<% end %>
+<table class="table">
+    <thead>
+        <th>time</th>
+        <th>level</th>
+        <th>Node</th>
+        <th>hostname</th>
+        <th>message</th>
+        <th>values</th>
+    </thead>
+
+    <tbody>
+        <%= for line <- @lines do%>
+            <tr>
+                <td><%= line.datetime %></td>
+                <td><%= inspect line.level %></td>
+                <td><%= inspect line.node_id %></td>
+                <td><%= line.hostname %></td>
+                <td><%= line.message %></td>
+                <td><%= inspect line.values %></td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>

@@ -1,10 +1,10 @@
 defmodule PenguinNodes.Mqtt.Message do
   @moduledoc """
-  Options for the timer node
+  NQTT Message
   """
   @type t :: %__MODULE__{
           topic: list(String.t()),
-          payload: map()
+          payload: any()
         }
   @enforce_keys [:topic, :payload]
   defstruct @enforce_keys

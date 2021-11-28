@@ -16,7 +16,7 @@ defmodule PenguinNodesWeb.Live.Logs do
   end
 
   @impl true
-  def handle_info(%{topic: "logs", event: "meow", payload: payload}, socket) do
+  def handle_info(%{topic: "logs", event: _, payload: payload}, socket) do
     lines = [payload | socket.assigns.lines]
     lines = Enum.take(lines, 100)
     socket = assign(socket, :lines, lines)

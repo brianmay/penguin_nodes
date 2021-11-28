@@ -12,9 +12,12 @@ defmodule PenguinNodes.Simple.Debug do
     @moduledoc """
     Options for the Debug node
     """
-    @type t :: %__MODULE__{}
+    @type t :: %__MODULE__{
+            message: String.t(),
+            level: atom()
+          }
     @enforce_keys []
-    defstruct @enforce_keys
+    defstruct @enforce_keys ++ [{:level, :debug}, {:message, "Got debug data"}]
   end
 
   @impl true
@@ -26,18 +29,8 @@ defmodule PenguinNodes.Simple.Debug do
 
   @impl true
   def handle_input(:value, data, %NodeModule.State{} = state) do
-    {:ok, hostname} = :inet.gethostname()
-    hostname = to_string(hostname)
-
-    data = %{
-      datetime: DateTime.utc_now(),
-      data: data,
-      node_id: state.node_id,
-      hostname: hostname
-    }
-
-    Logger.debug("DEBUG: #{inspect(data)}")
-    PenguinNodesWeb.Endpoint.broadcast!("logs", "meow", data)
+    log(state.assigns.level, state, state.assigns.message, %{data: data})
+    :ok = NodeModule.output(state, :value, data)
     {:noreply, state}
   end
 
