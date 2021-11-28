@@ -23,7 +23,7 @@ defmodule PenguinNodes.MqttHandler do
 
   @impl MqttPotion.Handler
   def handle_message(_topic, message) do
-    Logger.info("#{message.topic} #{inspect(message)} message")
+    PenguinNodes.MqttMultiplexer.message(message.topic, message.payload)
     :ok
   end
 end

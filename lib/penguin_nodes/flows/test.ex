@@ -4,6 +4,7 @@ defmodule PenguinNodes.Flows.Test do
   """
   require PenguinNodes.Nodes.Id
 
+  alias PenguinNodes.Mqtt
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Nodes
@@ -11,10 +12,14 @@ defmodule PenguinNodes.Flows.Test do
 
   @spec generate_test_flow(id :: Id.t()) :: Nodes.t()
   def generate_test_flow(id) do
-    timer1 = Simple.Timer.call(%Simple.Timer.Options{data: 10}, id(id, :timer1))
-    timer2 = Simple.Timer.call(%Simple.Timer.Options{data: 20}, id(id, :timer2))
+    timer1 = Simple.Timer.call(%Simple.Timer.Options{data: 10, interval: 10_000}, id(id, :timer1))
+    timer2 = Simple.Timer.call(%Simple.Timer.Options{data: 20, interval: 30_000}, id(id, :timer2))
+
+    mqtt =
+      Mqtt.In.call(%Mqtt.In.Options{topic: ["state", "Brian", "Fan", "power"]}, id(id, :mqtt))
+
     debug1 = Simple.Debug.call([timer1], %Simple.Debug.Options{}, id(id, :debug1))
-    debug2 = Simple.Debug.call([timer1, timer2], %Simple.Debug.Options{}, id(id, :debug2))
+    debug2 = Simple.Debug.call([mqtt, timer2], %Simple.Debug.Options{}, id(id, :debug2))
 
     Nodes.new()
     |> Nodes.merge(debug1)

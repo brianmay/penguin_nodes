@@ -41,6 +41,7 @@ defmodule PenguinNodes.Application do
       # Start the endpoint when the application starts
       PenguinNodesWeb.Endpoint,
       {Phoenix.PubSub, [name: PenguinNodes.PubSub, adapter: Phoenix.PubSub.PG2]},
+      {PenguinNodes.MqttMultiplexer, []},
       {MqttPotion.Connection,
        name: PenguinNodes.Mqtt,
        host: mqtt_host,
@@ -61,14 +62,21 @@ defmodule PenguinNodes.Application do
        subscriptions: []}
     ]
 
-    Enum.each(nodes().map, fn {_, %Node{} = node} ->
-      Singleton.start_child(NodeModule, node, node.node_id)
-    end)
-
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: PenguinNodes.Supervisor]
-    Supervisor.start_link(children, opts)
+
+    case Supervisor.start_link(children, opts) do
+      {:ok, pid} ->
+        Enum.each(nodes().map, fn {_, %Node{} = node} ->
+          Singleton.start_child(NodeModule, node, node.node_id)
+        end)
+
+        {:ok, pid}
+
+      error ->
+        error
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration
