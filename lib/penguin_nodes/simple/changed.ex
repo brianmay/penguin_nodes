@@ -9,6 +9,17 @@ defmodule PenguinNodes.Simple.Changed do
   alias PenguinNodes.Nodes.NodeModule
   alias PenguinNodes.Nodes.Wire
 
+  defmodule Inputs do
+    @moduledoc """
+    Inputs for the Debug Node
+    """
+    @type t :: %__MODULE__{
+            value: NodeModule.input_value()
+          }
+    @enforce_keys [:value]
+    defstruct @enforce_keys
+  end
+
   defmodule Options do
     @moduledoc """
     Options for the timer node
@@ -65,10 +76,10 @@ defmodule PenguinNodes.Simple.Changed do
     end
   end
 
-  @spec call(value :: NodeModule.input_value(), opts :: Options.t(), node_id :: Id.t()) ::
-          Wire.t()
-  def call(value, %Options{} = opts, node_id) do
-    nodes = NodeModule.call(__MODULE__, %{value: value}, opts, node_id)
+  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
+  def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
+    inputs = Map.from_struct(inputs)
+    nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
     Wire.new(nodes, node_id, :value)
   end
 end

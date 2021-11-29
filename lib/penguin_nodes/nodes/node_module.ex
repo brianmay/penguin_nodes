@@ -35,7 +35,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
             node_id: Id.t(),
             hostname: String.t(),
             message: String.t(),
-            values: map
+            values: map()
           }
     @enforce_keys [:level, :datetime, :node_id, :hostname, :message, :values]
     defstruct @enforce_keys
@@ -46,6 +46,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
       use GenServer
       @behaviour PenguinNodes.Nodes.NodeModule
       import PenguinNodes.Nodes.NodeModule
+      alias PenguinNodes.Nodes.NodeModule
 
       @doc false
       def init(_param), do: :ignore

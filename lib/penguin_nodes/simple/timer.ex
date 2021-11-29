@@ -9,6 +9,15 @@ defmodule PenguinNodes.Simple.Timer do
   alias PenguinNodes.Nodes.NodeModule
   alias PenguinNodes.Nodes.Wire
 
+  defmodule Inputs do
+    @moduledoc """
+    Inputs for the Debug Node
+    """
+    @type t :: %__MODULE__{}
+    @enforce_keys []
+    defstruct @enforce_keys
+  end
+
   defmodule Options do
     @moduledoc """
     Options for the timer node
@@ -35,9 +44,10 @@ defmodule PenguinNodes.Simple.Timer do
     {:noreply, state}
   end
 
-  @spec call(opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
-  def call(%Options{} = opts, node_id) do
-    nodes = NodeModule.call(__MODULE__, %{}, opts, node_id)
+  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
+  def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
+    inputs = Map.from_struct(inputs)
+    nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
     Wire.new(nodes, node_id, :timer)
   end
 end

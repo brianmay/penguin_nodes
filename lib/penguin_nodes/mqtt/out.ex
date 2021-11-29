@@ -9,6 +9,17 @@ defmodule PenguinNodes.Mqtt.Out do
 
   require Logger
 
+  defmodule Inputs do
+    @moduledoc """
+    Inputs for the Debug Node
+    """
+    @type t :: %__MODULE__{
+            value: NodeModule.input_value()
+          }
+    @enforce_keys [:value]
+    defstruct @enforce_keys
+  end
+
   defmodule Options do
     @moduledoc """
     Options for the Debug node
@@ -69,9 +80,9 @@ defmodule PenguinNodes.Mqtt.Out do
     {:noreply, state}
   end
 
-  @spec call(message :: NodeModule.input_value(), opts :: Options.t(), node_id :: Id.t()) ::
-          Nodes.t()
-  def call(message, %Options{} = opts, node_id) do
-    NodeModule.call(__MODULE__, %{message: message}, opts, node_id)
+  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Nodes.t()
+  def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
+    inputs = Map.from_struct(inputs)
+    NodeModule.call(__MODULE__, inputs, opts, node_id)
   end
 end

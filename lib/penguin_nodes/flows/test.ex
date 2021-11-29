@@ -2,6 +2,7 @@ defmodule PenguinNodes.Flows.Test do
   @moduledoc """
   Simple flows for testing nodes
   """
+  use PenguinNodes.Nodes.Flow
   require PenguinNodes.Nodes.Id
 
   alias PenguinNodes.Mqtt
@@ -52,32 +53,35 @@ defmodule PenguinNodes.Flows.Test do
   @spec message(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   defp message(%Wire{} = wire, id) do
     wire
-    |> Map.call(%Map.Options{map_func: &string_to_command/1}, id(id, :string_to_command))
-    |> Mqtt.Out.call(%Mqtt.Out.Options{format: :json}, id(id, :out))
+    |> call_with_value(Map, %{map_func: &string_to_command/1}, :string_to_command)
+    |> call_with_value(Mqtt.Out, %{format: :json}, :out)
   end
 
   @spec generate_test_flow(id :: Id.t()) :: Nodes.t()
   def generate_test_flow(id) do
-    timer1 = Timer.call(%Timer.Options{data: 10, interval: 10_000}, id(id, :timer1))
+    nodes = Nodes.new()
+
+    timer1 = call(Timer, %{data: 10, interval: 10_000}, :timer)
 
     message =
-      Mqtt.In.call(%Mqtt.In.Options{topic: ["state", "Brian", "Fan", "power"]}, id(id, :mqtt))
-      |> Map.call(%Map.Options{map_func: &power_to_boolean/1}, id(id, :power_to_boolean))
-      |> Changed.call(%Changed.Options{}, id(id, :changed))
-      |> Map.call(%Map.Options{map_func: &power_status_to_message/1}, id(id, :power_to_string))
+      call(Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, :mqtt)
+      |> call_with_value(Map, %{map_func: &power_to_boolean/1}, :power_to_boolean)
+      |> call_with_value(Changed, %{}, :changed)
+      |> call_with_value(Map, %{map_func: &power_status_to_message/1}, :power_to_string)
 
-    output_node =
-      message
-      |> message(id(id, :message))
+    timer1
+    |> call_with_value(Debug, %{}, :debug1)
+    |> terminate()
 
-    debug1_node = Debug.call([timer1], %Debug.Options{}, id(id, :debug1))
-    debug2_node = Debug.call([message], %Debug.Options{}, id(id, :debug2))
+    message
+    |> message(id(id, :message))
+    |> terminate()
 
-    Nodes.new()
-    |> Nodes.merge(debug1_node)
-    |> Nodes.merge(debug2_node)
-    |> Nodes.merge(output_node)
-    |> Nodes.build()
+    message
+    |> call_with_value(Debug, %{}, :debug2)
+    |> terminate()
+
+    Nodes.build(nodes)
   end
 
   # @spec test_flow() :: Macro.t()
