@@ -3,14 +3,11 @@ defmodule PenguinNodes.Flows.Test do
   Simple flows for testing nodes
   """
   use PenguinNodes.Nodes.Flow
-  require PenguinNodes.Nodes.Id
 
-  alias PenguinNodes.Life360.Circles
   alias PenguinNodes.Mqtt
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Nodes
-  alias PenguinNodes.Nodes.Wire
   alias PenguinNodes.Simple
 
   @type power_status :: boolean() | :offline | :unknown
@@ -34,68 +31,9 @@ defmodule PenguinNodes.Flows.Test do
   defp power_status_to_message(%Simple.Changed.Message{new: :unknown}),
     do: "The fan state is unknown"
 
-  @spec string_to_command(String.t()) :: Mqtt.Message.t()
-  defp string_to_command(message) do
-    %Mqtt.Message{
-      payload: [
-        %{
-          "locations" => ["Brian"],
-          "devices" => ["Robotica"],
-          "command" => %{
-            "message" => %{
-              text: message
-            }
-          }
-        }
-      ],
-      topic: ["execute"]
-    }
-  end
-
-  @spec life360_location_changed(person :: map(), acc :: map()) :: {person :: map(), acc :: map}
-  defp life360_location_changed(person, acc) do
-    id = person["id"]
-    location = person["location"]["name"]
-
-    old_location =
-      case Map.fetch(acc, id) do
-        {:ok, location} -> location
-        :error -> nil
-      end
-
-    out =
-      if location != old_location do
-        %{
-          old_location: old_location,
-          location: location,
-          person: person
-        }
-      else
-        nil
-      end
-
-    acc = Map.put(acc, id, location)
-    {out, acc}
-  end
-
-  @spec message(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
-  defp message(%Wire{} = wire, id) do
-    wire
-    |> call_with_value(Simple.Map, %{map_func: &string_to_command/1}, id(:string_to_command))
-    |> call_with_value(Mqtt.Out, %{format: :json}, id(:out))
-  end
-
-  @spec generate_test_flow(id :: Id.t()) :: Nodes.t()
-  def generate_test_flow(id) do
+  @spec generate_flow(id :: Id.t()) :: Nodes.t()
+  def generate_flow(id) do
     nodes = Nodes.new()
-
-    circles =
-      call(Circles, %{}, id(:circles))
-      |> call_with_value(
-        Simple.Reduce,
-        %{func: &life360_location_changed/2, acc: %{}},
-        id(:location_changed)
-      )
 
     message =
       call(Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
@@ -107,10 +45,6 @@ defmodule PenguinNodes.Flows.Test do
         id(:power_to_string)
       )
 
-    circles
-    |> call_with_value(Simple.Debug, %{}, id(:debug1))
-    |> terminate()
-
     message
     |> message(id(:message))
     |> terminate()
@@ -119,11 +53,6 @@ defmodule PenguinNodes.Flows.Test do
     |> call_with_value(Simple.Debug, %{}, id(:debug2))
     |> terminate()
 
-    Nodes.build(nodes)
+    nodes
   end
-
-  # @spec test_flow() :: Macro.t()
-  # defmacro test_flow do
-  #   Macro.escape(__MODULE__.generate_test_flow({}))
-  # end
 end

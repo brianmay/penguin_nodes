@@ -11,6 +11,7 @@ defmodule PenguinNodes.Nodes.Flow do
     quote do
       import PenguinNodes.Nodes.Flow
       require PenguinNodes.Nodes.Flow
+      import PenguinNodes.Flows.Helpers
     end
   end
 

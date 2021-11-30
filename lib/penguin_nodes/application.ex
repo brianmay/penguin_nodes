@@ -5,14 +5,14 @@ defmodule PenguinNodes.Application do
 
   use Application
 
-  alias PenguinNodes.Flows.Test
+  alias PenguinNodes.Flows
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
   alias PenguinNodes.Nodes.Nodes
 
   @spec nodes :: Nodes.t()
   def nodes do
-    Test.generate_test_flow({})
+    Flows.generate_flow({}) |> Nodes.build()
   end
 
   defp get_client_id do
