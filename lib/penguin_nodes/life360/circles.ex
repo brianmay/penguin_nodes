@@ -34,7 +34,8 @@ defmodule PenguinNodes.Life360.Circles do
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
     state = %NodeModule.State{state | assigns: Map.from_struct(options)}
-    :timer.send_interval(60_000, :timer)
+
+    Process.send_after(self(), :timer, 0)
     {:ok, state}
   end
 
@@ -58,8 +59,8 @@ defmodule PenguinNodes.Life360.Circles do
     end
   end
 
-  @impl true
-  def handle_info(:timer, %NodeModule.State{} = state) do
+  @spec handle_timer(NodeModule.State.t()) :: NodeModule.State.t()
+  def handle_timer(%NodeModule.State{} = state) do
     debug(state, "Got timer", %{})
 
     with {:ok, login} <- login(),
@@ -69,6 +70,13 @@ defmodule PenguinNodes.Life360.Circles do
       {:error, error} -> error(state, "life360 error #{inspect(error)}", %{})
     end
 
+    Process.send_after(self(), :timer, 60_000)
+    state
+  end
+
+  @impl true
+  def handle_info(:timer, %NodeModule.State{} = state) do
+    state = handle_timer(state)
     {:noreply, state}
   end
 
