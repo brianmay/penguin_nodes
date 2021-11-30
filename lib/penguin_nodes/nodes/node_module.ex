@@ -101,8 +101,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
     end
   end
 
-  @spec do_output(data :: any(), list(Forward.t())) :: :ok
-  defp do_output(data, outputs) do
+  @spec do_output2(data :: any(), list(Forward.t())) :: :ok
+  defp do_output2(data, outputs) do
     Enum.each(outputs, fn
       %Forward{} = forward ->
         case wait_for_pid(forward.node_id) do
@@ -114,25 +114,33 @@ defmodule PenguinNodes.Nodes.NodeModule do
     :ok
   end
 
-  @spec output!(state :: State.t(), id :: atom(), data :: any()) :: :ok
-  def output!(%State{} = state, id, data) do
-    outputs = Map.fetch!(state.outputs, id)
-    :ok = do_output(data, outputs)
-  end
-
-  @spec output(state :: State.t(), id :: atom(), data :: any()) :: :ok | :error
-  def output(%State{} = state, id, data) do
-    debug(state, "Sending to data to output", %{output: id, data: data})
-
+  @spec do_output1(state :: State.t(), id :: atom(), data :: any()) :: :ok | {:error, String.t()}
+  defp do_output1(%State{} = state, id, data) do
     case Map.fetch(state.outputs, id) do
       {:ok, outputs} ->
-        :ok = do_output(data, outputs)
+        debug(state, "Sending to data to output", %{output: id, data: data})
+        :ok = do_output2(data, outputs)
 
       :error ->
-        :error
+        error(state, "Output not found", %{output: id, data: data})
+        {:error, "Output #{inspect(id)} not found"}
     end
+  end
 
-    :ok
+  @spec output!(state :: State.t(), id :: atom(), data :: any()) :: :ok
+  def output!(%State{} = state, id, data) do
+    case do_output1(state, id, data) do
+      :ok -> :ok
+      {:error, reason} -> raise(reason)
+    end
+  end
+
+  @spec output(state :: State.t(), id :: atom(), data :: any()) :: :ok | {:error, String.t()}
+  def output(%State{} = state, id, data) do
+    case do_output1(state, id, data) do
+      :ok -> :ok
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   @doc """
