@@ -114,32 +114,16 @@ defmodule PenguinNodes.Nodes.NodeModule do
     :ok
   end
 
-  @spec do_output1(state :: State.t(), id :: atom(), data :: any()) :: :ok | {:error, String.t()}
-  defp do_output1(%State{} = state, id, data) do
+  @spec output(state :: State.t(), id :: atom(), data :: any()) :: :ok
+  def output(%State{} = state, id, data) do
     case Map.fetch(state.outputs, id) do
       {:ok, outputs} ->
         debug(state, "Sending to data to output", %{output: id, data: data})
         :ok = do_output2(data, outputs)
 
       :error ->
-        error(state, "Output not found", %{output: id, data: data})
-        {:error, "Output #{inspect(id)} not found"}
-    end
-  end
-
-  @spec output!(state :: State.t(), id :: atom(), data :: any()) :: :ok
-  def output!(%State{} = state, id, data) do
-    case do_output1(state, id, data) do
-      :ok -> :ok
-      {:error, reason} -> raise(reason)
-    end
-  end
-
-  @spec output(state :: State.t(), id :: atom(), data :: any()) :: :ok | {:error, String.t()}
-  def output(%State{} = state, id, data) do
-    case do_output1(state, id, data) do
-      :ok -> :ok
-      {:error, reason} -> {:error, reason}
+        info(state, "Output not found", %{output: id, data: data})
+        :ok
     end
   end
 
