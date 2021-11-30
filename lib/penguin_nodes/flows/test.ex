@@ -81,8 +81,8 @@ defmodule PenguinNodes.Flows.Test do
   @spec message(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   defp message(%Wire{} = wire, id) do
     wire
-    |> call_with_value(Simple.Map, %{map_func: &string_to_command/1}, :string_to_command)
-    |> call_with_value(Mqtt.Out, %{format: :json}, :out)
+    |> call_with_value(Simple.Map, %{map_func: &string_to_command/1}, id(:string_to_command))
+    |> call_with_value(Mqtt.Out, %{format: :json}, id(:out))
   end
 
   @spec generate_test_flow(id :: Id.t()) :: Nodes.t()
@@ -90,29 +90,33 @@ defmodule PenguinNodes.Flows.Test do
     nodes = Nodes.new()
 
     circles =
-      call(Circles, %{}, :circles)
+      call(Circles, %{}, id(:circles))
       |> call_with_value(
         Simple.Reduce,
         %{func: &life360_location_changed/2, acc: %{}},
-        :location_changed
+        id(:location_changed)
       )
 
     message =
-      call(Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, :mqtt)
-      |> call_with_value(Simple.Map, %{map_func: &power_to_boolean/1}, :power_to_boolean)
-      |> call_with_value(Simple.Changed, %{}, :changed)
-      |> call_with_value(Simple.Map, %{map_func: &power_status_to_message/1}, :power_to_string)
+      call(Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
+      |> call_with_value(Simple.Map, %{map_func: &power_to_boolean/1}, id(:power_to_boolean))
+      |> call_with_value(Simple.Changed, %{}, id(:changed))
+      |> call_with_value(
+        Simple.Map,
+        %{map_func: &power_status_to_message/1},
+        id(:power_to_string)
+      )
 
     circles
-    |> call_with_value(Simple.Debug, %{}, :debug1)
+    |> call_with_value(Simple.Debug, %{}, id(:debug1))
     |> terminate()
 
     message
-    |> message(id(id, :message))
+    |> message(id(:message))
     |> terminate()
 
     message
-    |> call_with_value(Simple.Debug, %{}, :debug2)
+    |> call_with_value(Simple.Debug, %{}, id(:debug2))
     |> terminate()
 
     Nodes.build(nodes)
