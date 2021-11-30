@@ -47,6 +47,7 @@ defmodule PenguinNodes.Flows.Life360 do
         %{func: &life360_location_changed/2, acc: %{}},
         id(:location_changed)
       )
+      |> filter_nils(id(:filter_nils))
 
     circles
     |> call_with_value(Simple.Debug, %{}, id(:debug1))
