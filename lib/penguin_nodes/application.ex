@@ -40,6 +40,7 @@ defmodule PenguinNodes.Application do
       # Start the endpoint when the application starts
       PenguinNodesWeb.Endpoint,
       {Phoenix.PubSub, [name: PenguinNodes.PubSub, adapter: Phoenix.PubSub.PG2]},
+      {PenguinNodes.Nodes.Id, [name: PenguinNodes.Nodes.Id]},
       {PenguinNodes.MqttMultiplexer, []},
       {MqttPotion.Connection,
        name: PenguinNodes.Mqtt,

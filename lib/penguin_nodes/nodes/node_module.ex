@@ -176,6 +176,11 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @spec call(module :: module(), inputs :: input_map(), opts :: map(), id :: Id.t()) :: Nodes.t()
   def call(module, inputs, opts, node_id) do
+    case Id.allocate_id(node_id) do
+      :ok -> nil
+      :error -> raise("Cannot allocate id #{inspect(node_id)}")
+    end
+
     inputs =
       Enum.map(inputs, fn {key, input_value} ->
         case input_value do
