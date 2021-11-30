@@ -24,7 +24,6 @@ defmodule PenguinNodes.Life360.Circles do
     @moduledoc """
     Options for the timer node
     """
-    @type map_func :: (any() -> any())
     @type t :: %__MODULE__{}
     @enforce_keys []
     defstruct @enforce_keys

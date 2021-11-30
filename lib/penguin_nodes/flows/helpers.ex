@@ -37,7 +37,7 @@ defmodule PenguinNodes.Flows.Helpers do
   @spec message(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   def message(%Wire{} = wire, id) do
     wire
-    |> call_with_value(Simple.Map, %{map_func: &string_to_command/1}, id(:string_to_command))
+    |> call_with_value(Simple.Map, %{func: &string_to_command/1}, id(:string_to_command))
     |> call_with_value(Mqtt.Out, %{format: :json}, id(:out))
   end
 

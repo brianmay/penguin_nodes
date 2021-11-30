@@ -26,9 +26,9 @@ defmodule PenguinNodes.Simple.Map do
     """
     @type map_func :: (any() -> any())
     @type t :: %__MODULE__{
-            map_func: map_func()
+            func: map_func()
           }
-    @enforce_keys [:map_func]
+    @enforce_keys [:func]
     defstruct @enforce_keys
   end
 
@@ -55,7 +55,7 @@ defmodule PenguinNodes.Simple.Map do
   @spec handle_input(:value, any, PenguinNodes.Nodes.NodeModule.State.t()) ::
           {:noreply, PenguinNodes.Nodes.NodeModule.State.t()}
   def handle_input(:value, data, %NodeModule.State{} = state) do
-    data = state.assigns.map_func.(data)
+    data = state.assigns.func.(data)
     :ok = NodeModule.output(state, :value, data)
     {:noreply, state}
   end
