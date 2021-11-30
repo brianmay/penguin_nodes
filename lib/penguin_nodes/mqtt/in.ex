@@ -47,7 +47,7 @@ defmodule PenguinNodes.Mqtt.In do
       payload: payload
     }
 
-    :ok = NodeModule.output(state, :mqtt, message)
+    :ok = NodeModule.output(state, :value, message)
     {:noreply, state}
   end
 
@@ -55,6 +55,6 @@ defmodule PenguinNodes.Mqtt.In do
   def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
     inputs = Map.from_struct(inputs)
     nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
-    Wire.new(nodes, node_id, :mqtt)
+    Wire.new(nodes, node_id, :value)
   end
 end
