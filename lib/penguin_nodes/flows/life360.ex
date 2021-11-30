@@ -15,21 +15,21 @@ defmodule PenguinNodes.Flows.Life360 do
     id = person["id"]
     location = person["location"]["name"]
 
-    old_location =
-      case Map.fetch(acc, id) do
-        {:ok, location} -> location
-        :error -> nil
-      end
-
     out =
-      if location != old_location do
-        %{
-          old_location: old_location,
-          location: location,
-          person: person
-        }
-      else
-        nil
+      case Map.fetch(acc, id) do
+        {:ok, old_location} ->
+          if location != old_location do
+            %{
+              old_location: old_location,
+              location: location,
+              person: person
+            }
+          else
+            nil
+          end
+
+        :error ->
+          nil
       end
 
     acc = Map.put(acc, id, location)
