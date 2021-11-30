@@ -7,8 +7,6 @@
         <thead>
             <th>Time</th>
             <th>Level</th>
-            <th>Module</th>
-            <th>Node</th>
             <th>Hostname</th>
             <th>Message</th>
             <th>Values</th>
@@ -20,8 +18,6 @@
                 <tr>
                     <td><%= line.datetime %></td>
                     <td><%= inspect line.level %></td>
-                    <td><%= inspect line.module %></td>
-                    <td><%= inspect line.node_id %></td>
                     <td><%= line.hostname %></td>
                     <td><%= line.message %></td>
                     <td><%= inspect line.values %></td>
