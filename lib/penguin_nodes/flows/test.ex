@@ -49,10 +49,6 @@ defmodule PenguinNodes.Flows.Test do
     |> message(id(:message))
     |> terminate()
 
-    message
-    |> call_with_value(Simple.Debug, %{}, id(:debug2))
-    |> terminate()
-
     nodes
   end
 end
