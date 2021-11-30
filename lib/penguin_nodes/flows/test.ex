@@ -54,9 +54,8 @@ defmodule PenguinNodes.Flows.Test do
 
   @spec life360_location_changed(person :: map(), acc :: map()) :: {person :: map(), acc :: map}
   defp life360_location_changed(person, acc) do
-    data = person["data"]
-    id = data["id"]
-    location = data["location"]["name"]
+    id = person["id"]
+    location = person["location"]["name"]
 
     old_location =
       case Map.fetch(acc, id) do
@@ -69,7 +68,7 @@ defmodule PenguinNodes.Flows.Test do
         %{
           old_location: old_location,
           location: location,
-          data: data
+          person: person
         }
       else
         nil

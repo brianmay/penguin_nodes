@@ -9,6 +9,7 @@
         <th>Hostname</th>
         <th>Message</th>
         <th>Values</th>
+        <th>Assigns</th>
     </thead>
 
     <tbody>
@@ -21,6 +22,7 @@
                 <td><%= line.hostname %></td>
                 <td><%= line.message %></td>
                 <td><%= inspect line.values %></td>
+                <td><%= inspect line.assigns %></td>
             </tr>
         <% end %>
     </tbody>

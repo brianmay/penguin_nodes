@@ -36,9 +36,10 @@ defmodule PenguinNodes.Nodes.NodeModule do
             node_id: Id.t(),
             hostname: String.t(),
             message: String.t(),
-            values: map()
+            values: map(),
+            assigns: map()
           }
-    @enforce_keys [:level, :datetime, :module, :node_id, :hostname, :message, :values]
+    @enforce_keys [:level, :datetime, :module, :node_id, :hostname, :message, :values, :assigns]
     defstruct @enforce_keys
   end
 
@@ -121,6 +122,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @spec output(state :: State.t(), id :: atom(), data :: any()) :: :ok | :error
   def output(%State{} = state, id, data) do
+    debug(state, "Sending to data to output", %{output: id, data: data})
+
     case Map.fetch(state.outputs, id) do
       {:ok, outputs} ->
         :ok = do_output(data, outputs)
@@ -211,7 +214,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
       node_id: state.node_id,
       hostname: hostname,
       message: message,
-      values: values
+      values: values,
+      assigns: state.assigns
     }
 
     string_level = Atom.to_string(level)
@@ -314,6 +318,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @impl true
   def handle_cast({:input, id, data}, %State{module: module} = state) do
+    debug(state, "Received data from input", %{input: id, data: data})
     module.handle_input(id, data, state)
   end
 

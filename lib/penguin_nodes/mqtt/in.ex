@@ -35,8 +35,7 @@ defmodule PenguinNodes.Mqtt.In do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: options}
-    # Process.sleep(5_000)
+    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
     MqttMultiplexer.subscribe(options.topic, :mqtt, self(), options.format, options.resend)
     {:ok, state}
   end

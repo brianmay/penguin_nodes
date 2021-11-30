@@ -35,7 +35,7 @@ defmodule PenguinNodes.Mqtt.Out do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: options}
+    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
     {:ok, state}
   end
 

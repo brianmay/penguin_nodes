@@ -33,7 +33,7 @@ defmodule PenguinNodes.Life360.Circles do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: options}
+    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
     :timer.send_interval(60_000, :timer)
     {:ok, state}
   end
