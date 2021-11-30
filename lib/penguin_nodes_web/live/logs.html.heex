@@ -1,29 +1,33 @@
 <h1>Logs</h1>
 
-<table class="table">
-    <thead>
-        <th>Time</th>
-        <th>Level</th>
-        <th>Module</th>
-        <th>Node</th>
-        <th>Hostname</th>
-        <th>Message</th>
-        <th>Values</th>
-        <th>Assigns</th>
-    </thead>
+<%= for {{module, node_id}, lines} <- @nodes do %>
 
-    <tbody>
-        <%= for line <- @lines do%>
-            <tr>
-                <td><%= line.datetime %></td>
-                <td><%= inspect line.level %></td>
-                <td><%= inspect line.module %></td>
-                <td><%= inspect line.node_id %></td>
-                <td><%= line.hostname %></td>
-                <td><%= line.message %></td>
-                <td><%= inspect line.values %></td>
-                <td><%= inspect line.assigns %></td>
-            </tr>
-        <% end %>
-    </tbody>
-</table>
+    <h1><%= inspect module %>/<%= inspect node_id %></h1>
+    <table class="table">
+        <thead>
+            <th>Time</th>
+            <th>Level</th>
+            <th>Module</th>
+            <th>Node</th>
+            <th>Hostname</th>
+            <th>Message</th>
+            <th>Values</th>
+            <th>Assigns</th>
+        </thead>
+
+        <tbody>
+            <%= for line <- lines do %>
+                <tr>
+                    <td><%= line.datetime %></td>
+                    <td><%= inspect line.level %></td>
+                    <td><%= inspect line.module %></td>
+                    <td><%= inspect line.node_id %></td>
+                    <td><%= line.hostname %></td>
+                    <td><%= line.message %></td>
+                    <td><%= inspect line.values %></td>
+                    <td><%= inspect line.assigns %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+<% end %>
