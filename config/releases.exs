@@ -11,6 +11,10 @@ config :penguin_nodes,
     client_id: System.get_env("OIDC_CLIENT_ID"),
     client_secret: System.get_env("OIDC_CLIENT_SECRET"),
     scope: System.get_env("OIDC_AUTH_SCOPE")
+  },
+  life360: %{
+    username: System.get_env("LIFE360_USERNAME"),
+    password: System.get_env("LIFE360_PASSWORD")
   }
 
 config :penguin_nodes, PenguinNodes.Repo,

@@ -32,12 +32,13 @@ defmodule PenguinNodes.Nodes.NodeModule do
     @type t :: %__MODULE__{
             level: atom(),
             datetime: DateTime.t(),
+            module: module(),
             node_id: Id.t(),
             hostname: String.t(),
             message: String.t(),
             values: map()
           }
-    @enforce_keys [:level, :datetime, :node_id, :hostname, :message, :values]
+    @enforce_keys [:level, :datetime, :module, :node_id, :hostname, :message, :values]
     defstruct @enforce_keys
   end
 
@@ -206,6 +207,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
     data = %{
       level: level,
       datetime: DateTime.utc_now(),
+      module: state.module,
       node_id: state.node_id,
       hostname: hostname,
       message: message,

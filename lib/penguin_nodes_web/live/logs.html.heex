@@ -2,12 +2,13 @@
 
 <table class="table">
     <thead>
-        <th>time</th>
-        <th>level</th>
+        <th>Time</th>
+        <th>Level</th>
+        <th>Module</th>
         <th>Node</th>
-        <th>hostname</th>
-        <th>message</th>
-        <th>values</th>
+        <th>Hostname</th>
+        <th>Message</th>
+        <th>Values</th>
     </thead>
 
     <tbody>
@@ -15,6 +16,7 @@
             <tr>
                 <td><%= line.datetime %></td>
                 <td><%= inspect line.level %></td>
+                <td><%= inspect line.module %></td>
                 <td><%= inspect line.node_id %></td>
                 <td><%= line.hostname %></td>
                 <td><%= line.message %></td>

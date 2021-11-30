@@ -40,7 +40,7 @@ defmodule PenguinNodes.Mqtt.Out do
   end
 
   @impl true
-  def handle_input(:message, %Message{} = message, %NodeModule.State{} = state) do
+  def handle_input(:value, %Message{} = message, %NodeModule.State{} = state) do
     topic =
       if state.assigns.topic == nil do
         message.topic
