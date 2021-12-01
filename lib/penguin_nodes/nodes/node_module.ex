@@ -19,9 +19,10 @@ defmodule PenguinNodes.Nodes.NodeModule do
             node_id: Id.t(),
             module: module(),
             outputs: %{atom() => list(Forward.t())},
-            assigns: map()
+            assigns: map(),
+            opts: struct()
           }
-    @enforce_keys [:node_id, :module, :outputs, :assigns]
+    @enforce_keys [:node_id, :module, :outputs, :assigns, :opts]
     defstruct @enforce_keys
   end
 
@@ -37,9 +38,9 @@ defmodule PenguinNodes.Nodes.NodeModule do
             hostname: String.t(),
             message: String.t(),
             values: map(),
-            assigns: map()
+            state: map()
           }
-    @enforce_keys [:level, :datetime, :module, :node_id, :hostname, :message, :values, :assigns]
+    @enforce_keys [:level, :datetime, :module, :node_id, :hostname, :message, :values, :state]
     defstruct @enforce_keys
   end
 
@@ -212,7 +213,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
       hostname: hostname,
       message: message,
       values: values,
-      assigns: state.assigns
+      state: state
     }
 
     string_level = Atom.to_string(level)
@@ -259,7 +260,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
       node_id: node.node_id,
       module: module,
       outputs: node.outputs,
-      assigns: %{}
+      assigns: %{},
+      opts: node.opts
     }
 
     # start up the state

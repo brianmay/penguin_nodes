@@ -46,8 +46,7 @@ defmodule PenguinNodes.Simple.Map do
 
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
+    %Options{} = node.opts
     {:ok, state}
   end
 
@@ -55,7 +54,7 @@ defmodule PenguinNodes.Simple.Map do
   @spec handle_input(:value, any, PenguinNodes.Nodes.NodeModule.State.t()) ::
           {:noreply, PenguinNodes.Nodes.NodeModule.State.t()}
   def handle_input(:value, data, %NodeModule.State{} = state) do
-    data = state.assigns.func.(data)
+    data = state.opts.func.(data)
     :ok = NodeModule.output(state, :value, data)
     {:noreply, state}
   end

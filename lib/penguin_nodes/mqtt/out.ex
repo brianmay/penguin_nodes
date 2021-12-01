@@ -34,22 +34,21 @@ defmodule PenguinNodes.Mqtt.Out do
 
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
+    %Options{} = node.opts
     {:ok, state}
   end
 
   @impl true
   def handle_input(:value, %Message{} = message, %NodeModule.State{} = state) do
     topic =
-      if state.assigns.topic == nil do
+      if state.opts.topic == nil do
         message.topic
       else
-        state.assigns.topic
+        state.opts.topic
       end
 
     raw_payload =
-      case state.assigns.format do
+      case state.opts.format do
         :raw ->
           message.payload
 

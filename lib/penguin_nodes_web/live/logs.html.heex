@@ -11,7 +11,7 @@
             <th>Hostname</th>
             <th>Message</th>
             <th>Values</th>
-            <th>Assigns</th>
+            <th>State</th>
         </thead>
 
         <tbody>
@@ -29,8 +29,8 @@
                     </td>
                      <td>
                         <div class="hover">
-                            <div class="trigger truncate"><%= inspect(line.assigns) |> String.slice(0..30) %></div>
-                            <div class="tooltip"><pre><%= inspect(line.assigns, pretty: true) %></pre></div>
+                            <div class="trigger truncate"><%= inspect(line.state) |> String.slice(0..30) %></div>
+                            <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
                         </div>
                     </td>
                 </tr>

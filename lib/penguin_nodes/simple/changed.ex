@@ -43,8 +43,7 @@ defmodule PenguinNodes.Simple.Changed do
 
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
+    %Options{} = node.opts
     {:ok, state}
   end
 

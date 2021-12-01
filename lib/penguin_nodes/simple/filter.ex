@@ -46,8 +46,7 @@ defmodule PenguinNodes.Simple.Filter do
 
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
+    %Options{} = node.opts
     {:ok, state}
   end
 
@@ -55,7 +54,7 @@ defmodule PenguinNodes.Simple.Filter do
   @spec handle_input(:value, any, PenguinNodes.Nodes.NodeModule.State.t()) ::
           {:noreply, PenguinNodes.Nodes.NodeModule.State.t()}
   def handle_input(:value, data, %NodeModule.State{} = state) do
-    case state.assigns.func.(data) do
+    case state.opts.func.(data) do
       true -> :ok = NodeModule.output(state, :value, data)
       false -> nil
     end

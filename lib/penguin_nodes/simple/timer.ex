@@ -33,14 +33,13 @@ defmodule PenguinNodes.Simple.Timer do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
-    state = %NodeModule.State{state | assigns: Map.from_struct(options)}
     :timer.send_interval(options.interval, :timer)
     {:ok, state}
   end
 
   @impl true
   def handle_info(:timer, %NodeModule.State{} = state) do
-    :ok = NodeModule.output(state, :timer, state.assigns.data)
+    :ok = NodeModule.output(state, :timer, state.opts.data)
     {:noreply, state}
   end
 
