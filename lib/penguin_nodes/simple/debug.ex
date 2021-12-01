@@ -4,7 +4,7 @@ defmodule PenguinNodes.Simple.Debug do
   alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
-  alias PenguinNodes.Nodes.Nodes
+  alias PenguinNodes.Nodes.Wire
 
   require Logger
 
@@ -44,9 +44,10 @@ defmodule PenguinNodes.Simple.Debug do
     {:noreply, state}
   end
 
-  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Nodes.t()
+  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
   def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
     inputs = Map.from_struct(inputs)
-    NodeModule.call(__MODULE__, inputs, opts, node_id)
+    nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
+    Wire.new(nodes, node_id, :value)
   end
 end

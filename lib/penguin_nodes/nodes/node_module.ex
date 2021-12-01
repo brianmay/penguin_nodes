@@ -123,7 +123,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
         :ok = do_output2(data, outputs)
 
       :error ->
-        info(state, "Output not found", %{output: id, data: data})
+        debug(state, "Output not found", %{output: id, data: data})
         :ok
     end
   end
