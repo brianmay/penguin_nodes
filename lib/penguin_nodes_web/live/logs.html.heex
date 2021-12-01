@@ -15,7 +15,7 @@
 
         <tbody>
             <%= for line <- lines do %>
-                <tr>
+                <tr class={get_class(line)}>
                     <td><%= line.datetime %></td>
                     <td><%= inspect line.level %></td>
                     <td><%= line.hostname %></td>

@@ -14,6 +14,14 @@ defmodule PenguinNodesWeb.Live.Logs do
     {:ok, socket}
   end
 
+  @spec get_class(log :: map()) :: String.t() | nil
+  defp get_class(%{level: :debug}), do: "alert-light"
+  defp get_class(%{level: :info}), do: "alert-secondary"
+  defp get_class(%{level: :notice}), do: "alert-primary"
+  defp get_class(%{level: :warning}), do: "alert-warning"
+  defp get_class(%{level: :error}), do: "alert-danger"
+  defp get_class(_), do: nil
+
   @impl true
   def handle_info(%{topic: "logs", event: _, payload: payload}, socket) do
     nodes = socket.assigns.nodes
