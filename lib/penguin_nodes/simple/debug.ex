@@ -28,7 +28,7 @@ defmodule PenguinNodes.Simple.Debug do
             level: atom()
           }
     @enforce_keys []
-    defstruct @enforce_keys ++ [{:level, :debug}, {:message, "Got debug data"}]
+    defstruct @enforce_keys ++ [{:level, :info}, {:message, "Got debug data"}]
   end
 
   @impl true
