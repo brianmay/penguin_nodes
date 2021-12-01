@@ -15,7 +15,8 @@ config :penguin_nodes,
   life360: %{
     username: System.get_env("LIFE360_USERNAME"),
     password: System.get_env("LIFE360_PASSWORD")
-  }
+  },
+  dry_run: false
 
 config :penguin_nodes, PenguinNodes.Repo,
   url: System.get_env("DATABASE_URL"),
