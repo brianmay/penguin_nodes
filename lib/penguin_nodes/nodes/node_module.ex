@@ -118,7 +118,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
   def output(%State{} = state, id, data) do
     case Map.fetch(state.outputs, id) do
       {:ok, outputs} ->
-        debug(state, "Sending to data to output", %{output: id, data: data})
+        debug(state, "Sending data to output", %{output: id, data: data})
         :ok = do_output2(data, outputs)
 
       :error ->
