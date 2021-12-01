@@ -40,25 +40,25 @@ defmodule PenguinNodes.Flows.Helpers do
   if @dry_run do
     def mqtt_out(%Wire{} = wire, id) do
       wire
-      |> call_with_value(Simple.Debug, %{}, id(:out))
+      |> call_value_none(Simple.Debug, %{}, id(:out))
     end
   else
     def mqtt_out(%Wire{} = wire, id) do
       wire
-      |> call_with_value(Mqtt.Out, %{format: :json}, id(:out))
+      |> call_value_none(Mqtt.Out, %{format: :json}, id(:out))
     end
   end
 
   @spec message(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   def message(%Wire{} = wire, id) do
     wire
-    |> call_with_value(Simple.Map, %{func: &string_to_command/1}, id(:string_to_command))
+    |> call_value_value(Simple.Map, %{func: &string_to_command/1}, id(:string_to_command))
     |> mqtt_out(id)
   end
 
-  @spec filter_nils(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
+  @spec filter_nils(wire :: Wire.t(), id :: Id.t()) :: Wire.t()
   def filter_nils(%Wire{} = wire, id) do
     wire
-    |> call_with_value(Simple.Filter, %{func: &filter_nils/1}, id)
+    |> call_value_value(Simple.Filter, %{func: &filter_nils/1}, id)
   end
 end

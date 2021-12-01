@@ -5,6 +5,7 @@ defmodule PenguinNodes.Nodes.Wire do
   alias PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Nodes
   alias PenguinNodes.Nodes.Output
+  alias PenguinNodes.Nodes.Types
 
   @type t :: %__MODULE__{
           nodes: Nodes.t(),
@@ -13,9 +14,9 @@ defmodule PenguinNodes.Nodes.Wire do
   @enforce_keys [:nodes, :output]
   defstruct @enforce_keys
 
-  @spec new(Nodes.t(), node_id :: Id.t(), id :: atom()) :: t()
-  def new(%Nodes{} = nodes, node_id, id) do
-    %__MODULE__{nodes: nodes, output: %Output{node_id: node_id, id: id}}
+  @spec new(Nodes.t(), node_id :: Id.t(), id :: atom(), type :: Types.data_type()) :: t()
+  def new(%Nodes{} = nodes, node_id, id, type) do
+    %__MODULE__{nodes: nodes, output: %Output{node_id: node_id, id: id, type: type}}
   end
 
   @spec get_outputs_from_list(list(t())) :: list(Output.t())

@@ -4,20 +4,21 @@ defmodule PenguinNodes.Simple.Changed do
   """
   use PenguinNodes.Nodes.NodeModule
 
-  alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Meta
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
-  alias PenguinNodes.Nodes.Wire
 
-  defmodule Inputs do
-    @moduledoc """
-    Inputs for the Debug Node
-    """
-    @type t :: %__MODULE__{
-            value: NodeModule.input_value()
-          }
-    @enforce_keys [:value]
-    defstruct @enforce_keys
+  @impl true
+  def get_meta do
+    %Meta{
+      description: "Check if input has changed since the last message",
+      inputs: %{
+        value: %Meta.Input{description: "The value to check", type: :any}
+      },
+      outputs: %{
+        value: %Meta.Output{description: "The value to check", type: Message}
+      }
+    }
   end
 
   defmodule Options do
@@ -73,12 +74,5 @@ defmodule PenguinNodes.Simple.Changed do
         state = assign(state, :data, data)
         {:noreply, state}
     end
-  end
-
-  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
-  def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
-    inputs = Map.from_struct(inputs)
-    nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
-    Wire.new(nodes, node_id, :value)
   end
 end

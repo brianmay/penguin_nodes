@@ -4,6 +4,7 @@ defmodule PenguinNodes.Nodes.Flow do
   """
   require Logger
   alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.NodeModule
   alias PenguinNodes.Nodes.Nodes
   alias PenguinNodes.Nodes.Wire
 
@@ -21,23 +22,42 @@ defmodule PenguinNodes.Nodes.Flow do
     end
   end
 
-  @spec call(module :: module(), opts :: map(), id :: Id.t()) :: Nodes.t() | Wire.t()
-  def call(module, opts, id) do
-    module_inputs = Module.concat(module, Inputs)
+  @spec call_none_none(module :: module(), opts :: map(), id :: Id.t()) :: Nodes.t()
+  def call_none_none(module, opts, id) do
     module_options = Module.concat(module, Options)
-    inputs = struct(module_inputs, %{})
+    inputs = %{}
     options = struct(module_options, opts)
-    module.call(inputs, options, id)
+    {_, nodes} = NodeModule.call(module, inputs, options, id)
+    nodes
   end
 
-  @spec call_with_value(value :: any(), module :: module(), opts :: map(), id :: Id.t()) ::
-          Nodes.t() | Wire.t()
-  def call_with_value(value, module, opts, id) do
-    module_inputs = Module.concat(module, Inputs)
+  @spec call_value_none(value :: any(), module :: module(), opts :: map(), id :: Id.t()) ::
+          Nodes.t()
+  def call_value_none(value, module, opts, id) do
     module_options = Module.concat(module, Options)
-    inputs = struct!(module_inputs, %{value: value})
+    inputs = %{value: value}
     options = struct!(module_options, opts)
-    module.call(inputs, options, id)
+    {_, nodes} = NodeModule.call(module, inputs, options, id)
+    nodes
+  end
+
+  @spec call_none_value(module :: module(), opts :: map(), id :: Id.t()) :: Wire.t()
+  def call_none_value(module, opts, id) do
+    module_options = Module.concat(module, Options)
+    inputs = %{}
+    options = struct(module_options, opts)
+    {%{value: wire}, _} = NodeModule.call(module, inputs, options, id)
+    wire
+  end
+
+  @spec call_value_value(value :: any(), module :: module(), opts :: map(), id :: Id.t()) ::
+          Nodes.t() | Wire.t()
+  def call_value_value(value, module, opts, id) do
+    module_options = Module.concat(module, Options)
+    inputs = %{value: value}
+    options = struct!(module_options, opts)
+    {%{value: wire}, _} = NodeModule.call(module, inputs, options, id)
+    wire
   end
 
   defmacro terminate(new_nodes) do

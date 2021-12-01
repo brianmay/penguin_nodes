@@ -4,20 +4,22 @@ defmodule PenguinNodes.Life360.Circles do
   """
   use PenguinNodes.Nodes.NodeModule
 
-  alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Meta
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
-  alias PenguinNodes.Nodes.Wire
 
   import PenguinNodes.Life360.Helpers
 
-  defmodule Inputs do
-    @moduledoc """
-    Inputs for the Debug Node
-    """
-    @type t :: %__MODULE__{}
-    @enforce_keys []
-    defstruct @enforce_keys
+  @impl true
+  @spec get_meta :: PenguinNodes.Nodes.Meta.t()
+  def get_meta do
+    %Meta{
+      description: "Receive Life360 circles",
+      inputs: %{},
+      outputs: %{
+        value: %Meta.Output{description: "The Life360 person", type: :map}
+      }
+    }
   end
 
   defmodule Options do
@@ -77,12 +79,5 @@ defmodule PenguinNodes.Life360.Circles do
   def handle_info(:timer, %NodeModule.State{} = state) do
     state = handle_timer(state)
     {:noreply, state}
-  end
-
-  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
-  def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
-    inputs = Map.from_struct(inputs)
-    nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
-    Wire.new(nodes, node_id, :value)
   end
 end

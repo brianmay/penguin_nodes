@@ -6,17 +6,18 @@ defmodule PenguinNodes.Mqtt.In do
 
   alias PenguinNodes.Mqtt.Message
   alias PenguinNodes.MqttMultiplexer
-  alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Meta
   alias PenguinNodes.Nodes.Node
-  alias PenguinNodes.Nodes.Wire
 
-  defmodule Inputs do
-    @moduledoc """
-    Inputs for the Debug Node
-    """
-    @type t :: %__MODULE__{}
-    @enforce_keys []
-    defstruct @enforce_keys
+  @impl true
+  def get_meta do
+    %Meta{
+      description: "Receive a mqtt message",
+      inputs: %{},
+      outputs: %{
+        value: %Meta.Output{description: "The incoming MQTT message", type: Message}
+      }
+    }
   end
 
   defmodule Options do
@@ -48,12 +49,5 @@ defmodule PenguinNodes.Mqtt.In do
 
     :ok = NodeModule.output(state, :value, message)
     {:noreply, state}
-  end
-
-  @spec call(inputs :: Inputs.t(), opts :: Options.t(), node_id :: Id.t()) :: Wire.t()
-  def call(%Inputs{} = inputs, %Options{} = opts, node_id) do
-    inputs = Map.from_struct(inputs)
-    nodes = NodeModule.call(__MODULE__, inputs, opts, node_id)
-    Wire.new(nodes, node_id, :value)
   end
 end

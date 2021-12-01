@@ -26,7 +26,8 @@ defmodule PenguinNodes.Nodes.Nodes do
         Node.reduce_inputs(node, outputs_map, fn key, output, outputs_map ->
           forward = %Forward{
             id: key,
-            node_id: node.node_id
+            node_id: node.node_id,
+            type: output.type
           }
 
           Map.update(outputs_map, {output.node_id, output.id}, [forward], fn value ->

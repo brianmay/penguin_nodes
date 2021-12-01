@@ -7,8 +7,10 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   alias PenguinNodes.Nodes.Forward
   alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Meta
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.Nodes
+  alias PenguinNodes.Nodes.Types
   alias PenguinNodes.Nodes.Wire
 
   defmodule State do
@@ -81,6 +83,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
               | {:noreply, State.t(), :hibernate}
               | {:noreply, State.t(), opts :: response_opts()}
 
+  @callback get_meta :: Meta.t()
   @optional_callbacks handle_input: 3
 
   @spec wait_for_pid(node_id :: Id.t(), tries :: integer()) :: :ok | :error
@@ -167,8 +170,30 @@ defmodule PenguinNodes.Nodes.NodeModule do
     GenServer.start_link(__MODULE__, node)
   end
 
-  @spec call(module :: module(), inputs :: input_map(), opts :: map(), id :: Id.t()) :: Nodes.t()
+  @spec check_type(got_type :: Types.data_type(), expected_type :: Types.data_type()) ::
+          :ok | :error
+  defp check_type(got_type, expected_type) do
+    case {got_type, expected_type} do
+      {x, x} -> :ok
+      {:any, _} -> :ok
+      {_, :any} -> :ok
+      _ -> :error
+    end
+  end
+
+  @spec check_type!(got_type :: Types.data_type(), expected_type :: Types.data_type()) :: :ok
+  defp check_type!(got_type, expected_type) do
+    case check_type(got_type, expected_type) do
+      :ok -> :ok
+      :error -> raise("Got type #{got_type} but expected type #{expected_type}")
+    end
+  end
+
+  @spec call(module :: module(), inputs :: input_map(), opts :: map(), id :: Id.t()) ::
+          {%{atom() => Wire.t()}, Nodes.t()}
   def call(module, inputs, opts, node_id) do
+    %Meta{} = meta = module.get_meta()
+
     case Id.allocate_id(node_id) do
       :ok -> nil
       :error -> raise("Cannot allocate id #{inspect(node_id)}")
@@ -181,6 +206,15 @@ defmodule PenguinNodes.Nodes.NodeModule do
           %Wire{} = wire -> {key, [wire]}
         end
       end)
+
+    Enum.each(inputs, fn {key, input_list} ->
+      Enum.each(input_list, fn %Wire{} = wire ->
+        got_type = wire.output.type
+        %Meta.Input{} = meta_input = Map.fetch!(meta.inputs, key)
+        expected_type = meta_input.type
+        :ok = check_type!(got_type, expected_type)
+      end)
+    end)
 
     input_map =
       inputs
@@ -195,9 +229,18 @@ defmodule PenguinNodes.Nodes.NodeModule do
       opts: opts
     }
 
-    inputs
-    |> Enum.reduce(Nodes.new(), fn {_, wires}, nodes -> Nodes.merge(nodes, wires) end)
-    |> Nodes.add_node(node)
+    nodes =
+      inputs
+      |> Enum.reduce(Nodes.new(), fn {_, wires}, nodes -> Nodes.merge(nodes, wires) end)
+      |> Nodes.add_node(node)
+
+    wires =
+      Enum.reduce(meta.outputs, %{}, fn {key, %Meta.Output{} = output}, wires ->
+        wire = Wire.new(nodes, node_id, key, output.type)
+        Map.put(wires, key, wire)
+      end)
+
+    {wires, nodes}
   end
 
   @spec log(atom(), State.t(), String.t(), map()) :: :ok
