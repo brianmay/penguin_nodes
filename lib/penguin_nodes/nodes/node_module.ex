@@ -327,4 +327,9 @@ defmodule PenguinNodes.Nodes.NodeModule do
       response -> response
     end
   end
+
+  @impl true
+  def terminate(reason, state) do
+    error(state, "Node terminating", %{reason: reason})
+  end
 end
