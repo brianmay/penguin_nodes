@@ -36,6 +36,7 @@ defmodule PenguinNodes.Simple.Reduce do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = node.opts
+    state = assign(state, :acc, %{})
     {:ok, state}
   end
 
@@ -43,7 +44,7 @@ defmodule PenguinNodes.Simple.Reduce do
   @spec handle_input(:value, any, PenguinNodes.Nodes.NodeModule.State.t()) ::
           {:noreply, PenguinNodes.Nodes.NodeModule.State.t()}
   def handle_input(:value, data, %NodeModule.State{} = state) do
-    acc = state.opts.acc
+    acc = state.assigns.acc
     {data, acc} = state.opts.func.(data, acc)
     state = assign(state, :acc, acc)
     :ok = NodeModule.output(state, :value, data)
