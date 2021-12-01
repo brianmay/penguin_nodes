@@ -2,7 +2,8 @@
 
 <%= for {{module, node_id}, lines} <- @nodes do %>
 
-    <h2><%= inspect module %>/<%= inspect node_id %></h2>
+    <h2><%= inspect node_id %></h2>
+    <p>module: <%= inspect module %></p>
     <table class="table">
         <thead>
             <th>Time</th>
@@ -20,8 +21,18 @@
                     <td><%= inspect line.level %></td>
                     <td><%= line.hostname %></td>
                     <td><%= line.message %></td>
-                    <td><pre><%= inspect(line.values, pretty: true) %></pre></td>
-                    <td><pre><%= inspect(line.assigns, pretty: true) %></pre></td>
+                    <td>
+                        <div class="hover">
+                            <div class="truncate"><%= inspect(line.values) |> String.slice(0..30) %></div>
+                            <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
+                        </div>
+                    </td>
+                     <td>
+                        <div class="hover">
+                            <div class="truncate"><%= inspect(line.assigns) |> String.slice(0..30) %></div>
+                            <div class="tooltip"><pre><%= inspect(line.assigns, pretty: true) %></pre></div>
+                        </div>
+                    </td>
                 </tr>
             <% end %>
         </tbody>
