@@ -36,7 +36,7 @@ table .FORECAST {
 
     .tooltip {
         //     /* hide and position tooltip */
-        top: -10px;
+        left: -20px;
         background-color: black;
         color: white;
         border-radius: 5px;
@@ -50,12 +50,6 @@ table .FORECAST {
     }
 
     .trigger:hover+.tooltip {
-        /* display tooltip on hover */
-        opacity: 1;
-        display: block;
-    }
-
-    .tooltip:hover {
         /* display tooltip on hover */
         opacity: 1;
         display: block;
