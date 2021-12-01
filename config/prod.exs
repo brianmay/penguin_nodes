@@ -15,6 +15,9 @@ config :penguin_nodes, PenguinNodesWeb.Endpoint,
   root: ".",
   version: Application.spec(:penguin_nodes, :vsn)
 
+config :penguin_nodes,
+  dry_run: false
+
 # Do not print debug messages in production
 config :logger, level: :info
 
