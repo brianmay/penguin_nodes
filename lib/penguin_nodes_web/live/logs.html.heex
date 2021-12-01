@@ -20,8 +20,8 @@
                     <td><%= inspect line.level %></td>
                     <td><%= line.hostname %></td>
                     <td><%= line.message %></td>
-                    <td><%= inspect line.values %></td>
-                    <td><%= inspect line.assigns %></td>
+                    <td><pre><%= inspect(line.values, pretty: true) %></pre></td>
+                    <td><pre><%= inspect(line.assigns, pretty: true) %></pre></td>
                 </tr>
             <% end %>
         </tbody>
