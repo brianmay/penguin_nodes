@@ -59,7 +59,8 @@ defmodule PenguinNodes.Application do
          cacertfile: ca_cert_file
        ],
        handler: PenguinNodes.MqttHandler,
-       subscriptions: []}
+       subscriptions: []},
+      {Finch, name: PenguinNodes.Finch}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

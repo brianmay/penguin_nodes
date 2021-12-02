@@ -52,7 +52,7 @@ defmodule PenguinNodes.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:mqtt_potion, github: "brianmay/mqtt_potion"},
       {:timex, "~> 3.5"},
-      {:mojito, "~> 0.7.1"},
+      {:finch, "~> 0.9.1"},
       {:libcluster, "~> 3.3"},
       {:dialyxir, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},

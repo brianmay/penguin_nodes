@@ -2,7 +2,7 @@ defmodule PenguinNodes.Life360.Helpers do
   @moduledoc """
   HTTP wrapper functions for Life360
   """
-  @spec login :: {:error, String.t() | Mojito.Error.t()} | {:ok, map()}
+  @spec login :: {:error, String.t() | Finch.Error.t()} | {:ok, map()}
   def login do
     url = "https://www.life360.com/v3/oauth2/token"
     config = Application.get_env(:penguin_nodes, :life360)
@@ -18,11 +18,13 @@ defmodule PenguinNodes.Life360.Helpers do
 
     payload = "username=#{username}&password=#{password}&grant_type=password"
 
-    case Mojito.post(url, headers, payload) do
-      {:ok, %Mojito.Response{status_code: 200, body: body}} ->
+    response = Finch.build(:post, url, headers, payload) |> Finch.request(PenguinNodes.Finch)
+
+    case response do
+      {:ok, %Finch.Response{status: 200, body: body}} ->
         {:ok, Jason.decode!(body)}
 
-      {:ok, %Mojito.Response{status_code: status_code}} ->
+      {:ok, %Finch.Response{status: status_code}} ->
         {:error, "Unexpected response #{status_code}"}
 
       {:error, error} ->
@@ -30,7 +32,7 @@ defmodule PenguinNodes.Life360.Helpers do
     end
   end
 
-  @spec list_circles(login :: map()) :: {:error, String.t() | Mojito.Error.t()} | {:ok, map()}
+  @spec list_circles(login :: map()) :: {:error, String.t() | Finch.Error.t()} | {:ok, map()}
   def list_circles(login) do
     token = login["access_token"]
     url = "https://www.life360.com/v3/circles"
@@ -40,11 +42,13 @@ defmodule PenguinNodes.Life360.Helpers do
       {"authorization", "Bearer #{token}"}
     ]
 
-    case Mojito.get(url, headers) do
-      {:ok, %Mojito.Response{status_code: 200, body: body}} ->
+    response = Finch.build(:get, url, headers) |> Finch.request(PenguinNodes.Finch)
+
+    case response do
+      {:ok, %Finch.Response{status: 200, body: body}} ->
         {:ok, Jason.decode!(body)}
 
-      {:ok, %Mojito.Response{status_code: status_code}} ->
+      {:ok, %Finch.Response{status: status_code}} ->
         {:error, "Unexpected response #{status_code}"}
 
       {:error, error} ->
@@ -53,7 +57,7 @@ defmodule PenguinNodes.Life360.Helpers do
   end
 
   @spec get_circle_info(login :: map(), circle :: map()) ::
-          {:error, String.t() | Mojito.Error.t()} | {:ok, map()}
+          {:error, String.t() | Finch.Error.t()} | {:ok, map()}
   def get_circle_info(login, circle) do
     token = login["access_token"]
     circle_id = circle["id"]
@@ -64,11 +68,13 @@ defmodule PenguinNodes.Life360.Helpers do
       {"authorization", "Bearer #{token}"}
     ]
 
-    case Mojito.get(url, headers) do
-      {:ok, %Mojito.Response{status_code: 200, body: body}} ->
+    response = Finch.build(:get, url, headers) |> Finch.request(PenguinNodes.Finch)
+
+    case response do
+      {:ok, %Finch.Response{status: 200, body: body}} ->
         {:ok, Jason.decode!(body)}
 
-      {:ok, %Mojito.Response{status_code: status_code}} ->
+      {:ok, %Finch.Response{status: status_code}} ->
         {:error, "Unexpected response #{status_code}"}
 
       {:error, error} ->
