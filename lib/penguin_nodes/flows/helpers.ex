@@ -67,7 +67,7 @@ defmodule PenguinNodes.Flows.Helpers do
 
   @spec message_for_location(wire :: Wire.t(), location :: String.t(), id :: Id.t()) :: Nodes.t()
   def message_for_location(%Wire{} = wire, location, id) do
-    func = &{message_func(&1, location)}
+    func = &message_func(&1, location)
 
     mqtt =
       mqtt_in(["state", location, "Messages", "power"], id(:mqtt_in))
