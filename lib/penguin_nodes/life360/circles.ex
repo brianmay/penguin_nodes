@@ -40,7 +40,8 @@ defmodule PenguinNodes.Life360.Circles do
     {:ok, state}
   end
 
-  @spec do_circles(state :: NodeModule.State.t(), login :: map(), circles :: list(map())) :: :ok
+  @spec do_circles(state :: NodeModule.State.t(), login :: map(), circles :: list(map())) ::
+          {:error, String.t() | Finch.Error.t()} | :ok
   defp do_circles(_, _, []) do
     :ok
   end
@@ -55,8 +56,7 @@ defmodule PenguinNodes.Life360.Circles do
         do_circles(state, login, tail)
 
       {:error, error} ->
-        error(state, "life360 error", %{error: error})
-        :ok
+        {:error, error}
     end
   end
 
@@ -65,8 +65,9 @@ defmodule PenguinNodes.Life360.Circles do
     debug(state, "Got timer", %{})
 
     with {:ok, login} <- login(),
-         {:ok, circles} <- list_circles(login) do
-      :ok = do_circles(state, login, circles["circles"])
+         {:ok, circles} <- list_circles(login),
+         :ok <- do_circles(state, login, circles["circles"]) do
+      nil
     else
       {:error, error} -> error(state, "life360 error", %{error: error})
     end
