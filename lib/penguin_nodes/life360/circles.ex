@@ -55,7 +55,7 @@ defmodule PenguinNodes.Life360.Circles do
         do_circles(state, login, tail)
 
       {:error, error} ->
-        error(state, "life360 error #{inspect(error)}", %{})
+        error(state, "life360 error", %{error: error})
         :ok
     end
   end
@@ -68,7 +68,7 @@ defmodule PenguinNodes.Life360.Circles do
          {:ok, circles} <- list_circles(login) do
       :ok = do_circles(state, login, circles["circles"])
     else
-      {:error, error} -> error(state, "life360 error #{inspect(error)}", %{})
+      {:error, error} -> error(state, "life360 error", %{error: error})
     end
 
     Process.send_after(self(), :timer, 60_000)
