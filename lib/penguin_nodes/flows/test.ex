@@ -12,11 +12,11 @@ defmodule PenguinNodes.Flows.Test do
 
   @type power_status :: boolean() | :offline | :unknown
 
-  @spec power_to_boolean(Mqtt.Message.t()) :: power_status()
-  defp power_to_boolean(%Mqtt.Message{payload: "OFF"}), do: false
-  defp power_to_boolean(%Mqtt.Message{payload: "HARD_OFF"}), do: :offline
-  defp power_to_boolean(%Mqtt.Message{payload: "ON"}), do: true
-  defp power_to_boolean(%Mqtt.Message{}), do: :unknown
+  @spec power_func(Mqtt.Message.t()) :: power_status()
+  defp power_func(%Mqtt.Message{payload: "OFF"}), do: false
+  defp power_func(%Mqtt.Message{payload: "HARD_OFF"}), do: :offline
+  defp power_func(%Mqtt.Message{payload: "ON"}), do: true
+  defp power_func(%Mqtt.Message{}), do: :unknown
 
   @spec power_status_to_message(Simple.Changed.Message.t()) :: String.t()
   defp power_status_to_message(%Simple.Changed.Message{new: true}),
@@ -36,7 +36,7 @@ defmodule PenguinNodes.Flows.Test do
     nodes = Nodes.new()
 
     call_none_value(Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
-    |> call_value_value(Simple.Map, %{func: &power_to_boolean/1}, id(:power_to_boolean))
+    |> call_value_value(Simple.Map, %{func: &power_func/1}, id(:power_to_boolean))
     |> call_value_value(Simple.Changed, %{}, id(:changed))
     |> call_value_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
     |> message(id(:message))
