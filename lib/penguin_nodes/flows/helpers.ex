@@ -9,8 +9,8 @@ defmodule PenguinNodes.Flows.Helpers do
   import PenguinNodes.Nodes.Flow
   alias PenguinNodes.Nodes.Mqtt
   alias PenguinNodes.Nodes.Nodes
-  alias PenguinNodes.Nodes.Wire
   alias PenguinNodes.Nodes.Simple
+  alias PenguinNodes.Nodes.Wire
 
   @dry_run Application.compile_env!(:penguin_nodes, :dry_run)
 
