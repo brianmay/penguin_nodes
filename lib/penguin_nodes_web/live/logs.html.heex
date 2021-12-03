@@ -1,9 +1,85 @@
 <h1>Logs</h1>
 
-<%= for {{module, node_id}, lines} <- @nodes do %>
+<%= if @id == nil do %>
+    <% keys = Map.keys(@nodes) |> Enum.sort() %>
+    <%= for node_id <- keys do %>
+        <% lines = Map.fetch!(@nodes, node_id) %>
+
+        <h2><%= inspect node_id %></h2>
+        <%= live_patch "Node", to: get_node_url(@socket, node_id) %>
+        <table class="table">
+            <thead>
+                <th>Time</th>
+                <th>Level</th>
+                <th>Hostname</th>
+                <th>Message</th>
+                <th>Values</th>
+                <th>State</th>
+            </thead>
+
+            <tbody>
+                <%= for line <- lines do %>
+                    <tr phx-click="select" phx-data-id={id_to_string(node_id)} class={get_class(line)}>
+                        <td><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                        <td><%= inspect line.level %></td>
+                        <td><%= line.hostname %></td>
+                        <td><%= line.message %></td>
+                        <td>
+                            <div class="hover">
+                                <div class="trigger truncate"><%= inspect(line.values) |> String.slice(0..30) %></div>
+                                <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="hover">
+                                <div class="trigger truncate"><%= inspect(line.state) |> String.slice(0..30) %></div>
+                                <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
+                            </div>
+                        </td>
+                    </tr>
+                <% end %>
+            </tbody>
+        </table>
+    <% end %>
+<% else %>
+    <% node_id = @id %>
+    <% lines = Map.get(@nodes, node_id, []) %>
+    <% state = GenServer.call({:global, node_id}, :get_state) %>
 
     <h2><%= inspect node_id %></h2>
-    <p>module: <%= inspect module %></p>
+    <p>module: <%= inspect state.module %></p>
+    <%= live_patch "All Nodes", to: get_list_url(@socket) %>
+
+
+    <pre><%= inspect(state, pretty: true) %></pre>
+
+    <h3>Inputs</h3>
+    <%= for {key, output_list} <- state.inputs do%>
+        <ul>
+            <li>
+                <%= Atom.to_string(key) %>:
+                <%= for %Output{} = output <- output_list do %>
+                    <% link = "#{inspect output.node_id}/#{inspect output.id}" %>
+                    <%= live_patch link, to: get_node_url(@socket, output.node_id) %>
+                <% end %>
+            </li>
+        </ul>
+    <% end %>
+
+    <h3>Outputs</h3>
+    <%= for {key, forward_list} <- state.outputs do%>
+        <ul>
+            <li>
+                <%= Atom.to_string(key) %>:
+                <%= for %Forward{} = forward <- forward_list do %>
+                    <% link = "#{inspect forward.node_id}/#{inspect forward.id}" %>
+                    <%= live_patch link, to: get_node_url(@socket, forward.node_id) %>
+                <% end %>
+            </li>
+        </ul>
+    <% end %>
+
+
     <table class="table">
         <thead>
             <th>Time</th>
@@ -16,7 +92,7 @@
 
         <tbody>
             <%= for line <- lines do %>
-                <tr class={get_class(line)}>
+                <tr phx-click="select" phx-data-id={id_to_string(node_id)} class={get_class(line)}>
                     <td><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
                     <td><%= inspect line.level %></td>
                     <td><%= line.hostname %></td>
@@ -27,7 +103,7 @@
                             <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
                         </div>
                     </td>
-                     <td>
+                    <td>
                         <div class="hover">
                             <div class="trigger truncate"><%= inspect(line.state) |> String.slice(0..30) %></div>
                             <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
@@ -37,4 +113,5 @@
             <% end %>
         </tbody>
     </table>
+
 <% end %>

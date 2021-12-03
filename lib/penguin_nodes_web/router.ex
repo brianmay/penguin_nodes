@@ -55,6 +55,7 @@ defmodule PenguinNodesWeb.Router do
       pipe_through [:browser, :ensure_auth]
       get "/login", PageController, :login
       live "/logs", Live.Logs, :index
+      live "/logs/:id", Live.Logs, :index
     end
   end
 

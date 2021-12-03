@@ -10,6 +10,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
   alias PenguinNodes.Nodes.Meta
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.Nodes
+  alias PenguinNodes.Nodes.Output
   alias PenguinNodes.Nodes.Types
   alias PenguinNodes.Nodes.Wire
 
@@ -20,11 +21,12 @@ defmodule PenguinNodes.Nodes.NodeModule do
     @type t :: %__MODULE__{
             node_id: Id.t(),
             module: module(),
+            inputs: %{atom() => list(Output.t())},
             outputs: %{atom() => list(Forward.t())},
             assigns: map(),
             opts: struct()
           }
-    @enforce_keys [:node_id, :module, :outputs, :assigns, :opts]
+    @enforce_keys [:node_id, :module, :inputs, :outputs, :assigns, :opts]
     defstruct @enforce_keys
   end
 
@@ -302,6 +304,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
     state = %State{
       node_id: node.node_id,
       module: module,
+      inputs: node.inputs,
       outputs: node.outputs,
       assigns: %{},
       opts: node.opts
@@ -345,6 +348,11 @@ defmodule PenguinNodes.Nodes.NodeModule do
       {:noreply, %State{} = state, opts} -> {:noreply, state, opts}
       response -> response
     end
+  end
+
+  @impl true
+  def handle_call(:get_state, _, %State{} = state) do
+    {:reply, state, state}
   end
 
   @impl true
