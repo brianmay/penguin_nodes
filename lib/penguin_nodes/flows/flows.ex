@@ -14,5 +14,6 @@ defmodule PenguinNodes.Flows do
     Nodes.new()
     |> Nodes.merge(Flows.Test.generate_flow(id(:test)))
     |> Nodes.merge(Flows.Life360.generate_flow(id(:life360)))
+    |> Nodes.merge(Flows.Test.generate_flow(id(:tesla)))
   end
 end
