@@ -20,6 +20,10 @@ defmodule PenguinNodes.Simple.Switch do
         value: %Meta.Output{
           description: "The same value if the switch value was true",
           type: :any
+        },
+        inverted: %Meta.Output{
+          description: "The same value if the switch value was not true",
+          type: :any
         }
       }
     }
@@ -48,8 +52,8 @@ defmodule PenguinNodes.Simple.Switch do
   def handle_input(:value, data, %NodeModule.State{} = state) do
     case state.assigns.switch do
       true -> :ok = NodeModule.output(state, :value, data)
-      false -> nil
-      nil -> nil
+      false -> :ok = NodeModule.output(state, :inverted, data)
+      nil -> :ok = NodeModule.output(state, :inverted, data)
     end
 
     {:noreply, state}

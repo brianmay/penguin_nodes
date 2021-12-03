@@ -62,14 +62,37 @@ defmodule PenguinNodes.Nodes.Flow do
           values :: map(),
           opts :: map(),
           id :: Id.t()
-        ) ::
-          Nodes.t() | Wire.t()
+        ) :: Wire.t()
   def call_value_value(value, module, inputs \\ %{}, opts, id) do
     module_options = Module.concat(module, Options)
     inputs = Map.put(inputs, :value, value)
     options = struct!(module_options, opts)
     {%{value: wire}, _} = NodeModule.call(module, inputs, options, id)
     wire
+  end
+
+  @spec call_none_map(module :: module(), opts :: map(), id :: Id.t()) :: %{atom() => Wire.t()}
+  def call_none_map(module, opts, id) do
+    module_options = Module.concat(module, Options)
+    inputs = %{}
+    options = struct(module_options, opts)
+    {map, _} = NodeModule.call(module, inputs, options, id)
+    map
+  end
+
+  @spec call_value_map(
+          value :: any(),
+          module :: module(),
+          values :: map(),
+          opts :: map(),
+          id :: Id.t()
+        ) :: %{atom() => Wire.t()}
+  def call_value_map(value, module, inputs \\ %{}, opts, id) do
+    module_options = Module.concat(module, Options)
+    inputs = Map.put(inputs, :value, value)
+    options = struct!(module_options, opts)
+    {map, _} = NodeModule.call(module, inputs, options, id)
+    map
   end
 
   defmacro terminate(new_nodes) do
