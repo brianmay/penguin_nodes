@@ -4,8 +4,10 @@ defmodule PenguinNodesWeb.Live.Logs do
 
   alias Phoenix.LiveView.Socket
 
+  alias PenguinNodes.Config
   alias PenguinNodes.Nodes.Forward
   alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.Output
   alias PenguinNodesWeb.Endpoint
 

@@ -5,15 +5,7 @@ defmodule PenguinNodes.Application do
 
   use Application
 
-  alias PenguinNodes.Flows
-  alias PenguinNodes.Nodes.Node
-  alias PenguinNodes.Nodes.NodeModule
-  alias PenguinNodes.Nodes.Nodes
-
-  @spec nodes :: Nodes.t()
-  def nodes do
-    Flows.generate_flow({}) |> Nodes.build()
-  end
+  alias PenguinNodes.Config
 
   defp get_client_id do
     {:ok, hostname} = :inet.gethostname()
@@ -60,24 +52,15 @@ defmodule PenguinNodes.Application do
        ],
        handler: PenguinNodes.MqttHandler,
        subscriptions: []},
-      {Finch, name: PenguinNodes.Finch}
+      {Finch, name: PenguinNodes.Finch},
+      {Config, name: Config}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: PenguinNodes.Supervisor]
 
-    case Supervisor.start_link(children, opts) do
-      {:ok, pid} ->
-        Enum.each(nodes().map, fn {_, %Node{} = node} ->
-          Singleton.start_child(NodeModule, node, node.node_id)
-        end)
-
-        {:ok, pid}
-
-      error ->
-        error
-    end
+    Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration
