@@ -36,6 +36,17 @@ defmodule PenguinNodes.Flows.Life360 do
     {out, acc}
   end
 
+  @spec changed_to_message(changed :: map()) :: String.t()
+  def changed_to_message(changed) do
+    name = "#{changed.person["firstName"]} #{changed.person["lastName"]}"
+
+    case changed do
+      %{old_location: nil, location: location} -> "#{name} has arrived at #{location}"
+      %{old_location: location, location: nil} -> "#{name} has left #{location}"
+      %{old_location: old, location: new} -> "#{name} has left #{old} and arrived at #{new}"
+    end
+  end
+
   @spec generate_flow(id :: Id.t()) :: Nodes.t()
   def generate_flow(id) do
     nodes = Nodes.new()
@@ -47,7 +58,8 @@ defmodule PenguinNodes.Flows.Life360 do
       id(:location_changed)
     )
     |> filter_nils(id(:filter_nils))
-    |> call_value_value(Simple.Debug, %{}, id(:debug1))
+    |> call_value_value(Simple.Map, %{func: &changed_to_message/1}, id(:changed_to_message))
+    |> message(id(:message))
     |> terminate()
 
     nodes
