@@ -53,7 +53,7 @@ defmodule PenguinNodes.Simple.Switch do
     case state.assigns.switch do
       true -> :ok = NodeModule.output(state, :value, data)
       false -> :ok = NodeModule.output(state, :inverted, data)
-      nil -> :ok = NodeModule.output(state, :inverted, data)
+      nil -> :ok
     end
 
     {:noreply, state}
