@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Life360.Circles do
+defmodule PenguinNodes.Nodes.Life360.Circles do
   @moduledoc """
   A simple timer node
   """
@@ -8,7 +8,7 @@ defmodule PenguinNodes.Life360.Circles do
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
 
-  import PenguinNodes.Life360.Helpers
+  import PenguinNodes.Nodes.Life360.Helpers
 
   @impl true
   @spec get_meta :: PenguinNodes.Nodes.Meta.t()

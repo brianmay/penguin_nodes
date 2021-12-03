@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Life360.Helpers do
+defmodule PenguinNodes.Nodes.Life360.Helpers do
   @moduledoc """
   HTTP wrapper functions for Life360
   """

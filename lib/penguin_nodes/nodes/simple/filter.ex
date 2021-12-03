@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Simple.Filter do
+defmodule PenguinNodes.Nodes.Simple.Filter do
   @moduledoc """
   A simple timer node
   """

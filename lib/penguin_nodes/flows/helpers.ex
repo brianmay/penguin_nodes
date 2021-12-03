@@ -4,13 +4,13 @@ defmodule PenguinNodes.Flows.Helpers do
   """
   require PenguinNodes.Nodes.Flow
 
-  alias PenguinNodes.Mqtt
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
   import PenguinNodes.Nodes.Flow
+  alias PenguinNodes.Nodes.Mqtt
   alias PenguinNodes.Nodes.Nodes
   alias PenguinNodes.Nodes.Wire
-  alias PenguinNodes.Simple
+  alias PenguinNodes.Nodes.Simple
 
   @dry_run Application.compile_env!(:penguin_nodes, :dry_run)
 

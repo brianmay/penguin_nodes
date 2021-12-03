@@ -4,11 +4,11 @@ defmodule PenguinNodes.Flows.Tesla do
   """
   use PenguinNodes.Nodes.Flow
 
-  alias PenguinNodes.Mqtt
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Mqtt
   alias PenguinNodes.Nodes.Nodes
-  alias PenguinNodes.Simple
+  alias PenguinNodes.Nodes.Simple
 
   @spec geofence_to_message(Simple.Changed.Message.t()) :: String.t()
   defp geofence_to_message(%Simple.Changed.Message{old: nil, new: new}),

@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Mqtt.Message do
+defmodule PenguinNodes.Nodes.Mqtt.Message do
   @moduledoc """
   NQTT Message
   """

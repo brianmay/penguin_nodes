@@ -1,8 +1,8 @@
-defmodule PenguinNodes.Mqtt.Out do
+defmodule PenguinNodes.Nodes.Mqtt.Out do
   use PenguinNodes.Nodes.NodeModule
 
-  alias PenguinNodes.Mqtt.Message
   alias PenguinNodes.Nodes.Meta
+  alias PenguinNodes.Nodes.Mqtt.Message
   alias PenguinNodes.Nodes.Node
   alias PenguinNodes.Nodes.NodeModule
 

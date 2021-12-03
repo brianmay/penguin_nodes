@@ -4,11 +4,11 @@ defmodule PenguinNodes.Flows.Life360 do
   """
   use PenguinNodes.Nodes.Flow
 
-  alias PenguinNodes.Life360.Circles
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Life360.Circles
   alias PenguinNodes.Nodes.Nodes
-  alias PenguinNodes.Simple
+  alias PenguinNodes.Nodes.Simple
 
   @spec life360_location_changed(person :: map(), acc :: map()) :: {person :: map(), acc :: map}
   defp life360_location_changed(person, acc) do

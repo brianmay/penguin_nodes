@@ -1,12 +1,12 @@
-defmodule PenguinNodes.Mqtt.In do
+defmodule PenguinNodes.Nodes.Mqtt.In do
   @moduledoc """
   A simple timer node
   """
   use PenguinNodes.Nodes.NodeModule
 
-  alias PenguinNodes.Mqtt.Message
   alias PenguinNodes.MqttMultiplexer
   alias PenguinNodes.Nodes.Meta
+  alias PenguinNodes.Nodes.Mqtt.Message
   alias PenguinNodes.Nodes.Node
 
   @impl true

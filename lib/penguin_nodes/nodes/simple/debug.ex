@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Simple.Debug do
+defmodule PenguinNodes.Nodes.Simple.Debug do
   use PenguinNodes.Nodes.NodeModule
 
   alias PenguinNodes.Nodes.Meta

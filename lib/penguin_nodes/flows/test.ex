@@ -4,11 +4,11 @@ defmodule PenguinNodes.Flows.Test do
   """
   use PenguinNodes.Nodes.Flow
 
-  alias PenguinNodes.Mqtt
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
+  alias PenguinNodes.Nodes.Mqtt
   alias PenguinNodes.Nodes.Nodes
-  alias PenguinNodes.Simple
+  alias PenguinNodes.Nodes.Simple
 
   @type power_status :: boolean() | :offline | :unknown
 

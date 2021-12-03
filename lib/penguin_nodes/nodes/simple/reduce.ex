@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Simple.Reduce do
+defmodule PenguinNodes.Nodes.Simple.Reduce do
   @moduledoc """
   A simple timer node
   """
