@@ -14,10 +14,10 @@ defmodule PenguinNodes.Flows.Tesla do
   defp payload_func(%Mqtt.Message{payload: payload}), do: payload
 
   @spec geofence_to_message(Simple.Changed.Message.t()) :: String.t()
-  defp geofence_to_message(%Simple.Changed.Message{old: nil, new: new}),
+  defp geofence_to_message(%Simple.Changed.Message{old: "", new: new}),
     do: "The Tesla has arrived at #{new}"
 
-  defp geofence_to_message(%Simple.Changed.Message{old: old, new: nil}),
+  defp geofence_to_message(%Simple.Changed.Message{old: old, new: ""}),
     do: "The Tesla has left #{old}"
 
   defp geofence_to_message(%Simple.Changed.Message{old: old, new: new}),
