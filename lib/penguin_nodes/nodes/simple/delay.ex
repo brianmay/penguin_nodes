@@ -1,4 +1,4 @@
-defmodule PenguinNodes.Nodes.Simple.Timer do
+defmodule PenguinNodes.Nodes.Simple.Delay do
   @moduledoc """
   A simple timer node
   """
@@ -11,12 +11,12 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
   @impl true
   def get_meta do
     %Meta{
-      description: "Generate a message once eveyr timer period",
+      description: "Send true value after delay and cancel with false value",
       inputs: %{
-        value: %Meta.Input{description: "True to start timer, false to cancel", type: :boolean}
+        value: %Meta.Input{description: "The input value", type: :boolean}
       },
       outputs: %{
-        value: %Meta.Output{description: "The output value", type: :any}
+        value: %Meta.Output{description: "The output value", type: :boolean}
       }
     }
   end
@@ -26,12 +26,9 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
     Options for the timer node
     """
     @type t :: %__MODULE__{
-            start_data: any(),
-            data: any(),
-            end_data: any(),
             interval: integer()
           }
-    @enforce_keys [:start_data, :data, :end_data, :interval]
+    @enforce_keys [:interval]
     defstruct @enforce_keys
   end
 
@@ -44,7 +41,8 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
 
   @impl true
   def handle_info(:timer, %NodeModule.State{} = state) do
-    :ok = NodeModule.output(state, :value, state.opts.data)
+    :ok = NodeModule.output(state, :value, true)
+    state = assign(state, timer: nil)
     {:noreply, state}
   end
 
@@ -57,16 +55,15 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
     cond do
       state.assigns.timer == nil and data ->
         # timer not set but requested
-        {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
+        timer = Process.send_after(self(), :timer, state.opts.interval)
         state = assign(state, timer: timer)
-        :ok = NodeModule.output(state, :value, state.opts.start_data)
         {:noreply, state}
 
       state.assigns.timer != nil and not data ->
         # timer set and cancel requested
-        :timer.cancel(state.assigns.timer)
+        Process.cancel_timer(state.assigns.timer)
         state = assign(state, timer: nil)
-        :ok = NodeModule.output(state, :value, state.opts.end_data)
+        :ok = NodeModule.output(state, :value, false)
         {:noreply, state}
 
       data ->
@@ -75,6 +72,7 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
 
       not data ->
         # timer not set and received false
+        :ok = NodeModule.output(state, :value, false)
         {:noreply, state}
     end
   end
