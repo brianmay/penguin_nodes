@@ -22,74 +22,60 @@ defmodule PenguinNodes.Nodes.Flow do
     end
   end
 
-  @spec call_none_none(module :: module(), opts :: map(), id :: Id.t()) :: Nodes.t()
-  def call_none_none(module, opts, id) do
-    module_options = Module.concat(module, Options)
-    inputs = %{}
-    options = struct(module_options, opts)
-    {_, nodes} = NodeModule.call(module, inputs, options, id)
-    nodes
+  @type input_t :: NodeModule.input_value() | NodeModule.input_map() | nil
+
+  @spec params_to_map(value :: input_t(), extra :: NodeModule.input_map()) ::
+          NodeModule.input_map()
+  def params_to_map(value, extra) do
+    case value do
+      nil -> %{}
+      %Wire{} = value -> Map.put_new(extra, :value, value)
+      value when is_list(value) -> Map.put_new(extra, :value, value)
+      value when is_map(value) -> Map.merge(value, extra)
+    end
   end
 
-  @spec call_value_none(
-          value :: any(),
+  @spec call_none(
+          value :: input_t(),
           module :: module(),
-          values :: map(),
+          extra :: NodeModule.input_map(),
           opts :: map(),
           id :: Id.t()
         ) ::
           Nodes.t()
-  def call_value_none(value, module, inputs \\ %{}, opts, id) do
+  def call_none(value, module, extra \\ %{}, opts, id) do
+    inputs = params_to_map(value, extra)
     module_options = Module.concat(module, Options)
-    inputs = Map.put(inputs, :value, value)
     options = struct!(module_options, opts)
     {_, nodes} = NodeModule.call(module, inputs, options, id)
     nodes
   end
 
-  @spec call_none_value(module :: module(), opts :: map(), id :: Id.t()) :: Wire.t()
-  def call_none_value(module, opts, id) do
-    module_options = Module.concat(module, Options)
-    inputs = %{}
-    options = struct(module_options, opts)
-    {%{value: wire}, _} = NodeModule.call(module, inputs, options, id)
-    wire
-  end
-
-  @spec call_value_value(
-          value :: any(),
+  @spec call_value(
+          value :: input_t(),
           module :: module(),
-          values :: map(),
+          extra :: NodeModule.input_map(),
           opts :: map(),
           id :: Id.t()
         ) :: Wire.t()
-  def call_value_value(value, module, inputs \\ %{}, opts, id) do
+  def call_value(value, module, extra \\ %{}, opts, id) do
+    inputs = params_to_map(value, extra)
     module_options = Module.concat(module, Options)
-    inputs = Map.put(inputs, :value, value)
     options = struct!(module_options, opts)
-    {%{value: wire}, _} = NodeModule.call(module, inputs, options, id)
+    {%{value: %Wire{} = wire}, _} = NodeModule.call(module, inputs, options, id)
     wire
   end
 
-  @spec call_none_map(module :: module(), opts :: map(), id :: Id.t()) :: %{atom() => Wire.t()}
-  def call_none_map(module, opts, id) do
-    module_options = Module.concat(module, Options)
-    inputs = %{}
-    options = struct(module_options, opts)
-    {map, _} = NodeModule.call(module, inputs, options, id)
-    map
-  end
-
-  @spec call_value_map(
-          value :: any(),
+  @spec call_map(
+          value :: input_t(),
           module :: module(),
-          values :: map(),
+          extra :: NodeModule.input_map(),
           opts :: map(),
           id :: Id.t()
         ) :: %{atom() => Wire.t()}
-  def call_value_map(value, module, inputs \\ %{}, opts, id) do
+  def call_map(value, module, extra \\ %{}, opts, id) do
+    inputs = params_to_map(value, extra)
     module_options = Module.concat(module, Options)
-    inputs = Map.put(inputs, :value, value)
     options = struct!(module_options, opts)
     {map, _} = NodeModule.call(module, inputs, options, id)
     map

@@ -35,10 +35,10 @@ defmodule PenguinNodes.Flows.Test do
   def generate_flow(id) do
     nodes = Nodes.new()
 
-    call_none_value(Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
-    |> call_value_value(Simple.Map, %{func: &power_func/1}, id(:power_to_boolean))
-    |> call_value_value(Simple.Changed, %{}, id(:changed))
-    |> call_value_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
+    call_value(nil, Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
+    |> call_value(Simple.Map, %{func: &power_func/1}, id(:power_to_boolean))
+    |> call_value(Simple.Changed, %{}, id(:changed))
+    |> call_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
     |> message(id(:message))
     |> terminate()
 

@@ -51,14 +51,14 @@ defmodule PenguinNodes.Flows.Life360 do
   def generate_flow(id) do
     nodes = Nodes.new()
 
-    call_none_value(Circles, %{}, id(:circles))
-    |> call_value_value(
+    call_value(nil, Circles, %{}, id(:circles))
+    |> call_value(
       Simple.Reduce,
       %{func: &life360_location_changed/2, acc: %{}},
       id(:location_changed)
     )
     |> filter_nils(id(:filter_nils))
-    |> call_value_value(Simple.Map, %{func: &changed_to_message/1}, id(:changed_to_message))
+    |> call_value(Simple.Map, %{func: &changed_to_message/1}, id(:changed_to_message))
     |> message(id(:message))
     |> terminate()
 

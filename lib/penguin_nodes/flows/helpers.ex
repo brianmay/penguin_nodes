@@ -22,7 +22,7 @@ defmodule PenguinNodes.Flows.Helpers do
 
   @spec power_to_boolean(wire :: Wire.t(), id :: Id.t()) :: Wire.t()
   def power_to_boolean(%Wire{} = wire, id) do
-    call_value_value(wire, Simple.Map, %{func: &power_to_boolean_func/1}, id)
+    call_value(wire, Simple.Map, %{func: &power_to_boolean_func/1}, id)
   end
 
   @spec filter_nils(any()) :: boolean()
@@ -31,19 +31,19 @@ defmodule PenguinNodes.Flows.Helpers do
 
   @spec mqtt_in(topic :: list(String.t()), id :: Id.t()) :: Wire.t()
   def mqtt_in(topic, id) do
-    call_none_value(Mqtt.In, %{topic: topic}, id)
+    call_value(nil, Mqtt.In, %{topic: topic}, id)
   end
 
   @spec mqtt_out(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   if @dry_run do
     def mqtt_out(%Wire{} = wire, id) do
       wire
-      |> call_value_none(Simple.Debug, %{}, id)
+      |> call_none(Simple.Debug, %{}, id)
     end
   else
     def mqtt_out(%Wire{} = wire, id) do
       wire
-      |> call_value_none(Mqtt.Out, %{format: :json}, id)
+      |> call_none(Mqtt.Out, %{format: :json}, id)
     end
   end
 
@@ -74,17 +74,17 @@ defmodule PenguinNodes.Flows.Helpers do
       |> power_to_boolean(id(:boolean))
 
     %{value: wire, inverted: debug} =
-      call_value_map(wire, Simple.Switch, %{switch: mqtt}, %{}, id(:switch))
+      call_map(wire, Simple.Switch, %{switch: mqtt}, %{}, id(:switch))
 
     nodes = Nodes.new()
 
     wire
-    |> call_value_value(Simple.Map, %{func: func}, id(:string_to_command))
+    |> call_value(Simple.Map, %{func: func}, id(:string_to_command))
     |> mqtt_out(id(:mqtt_out))
     |> terminate()
 
     debug
-    |> call_value_none(Simple.Debug, %{message: "MSG disabled for message"}, id(:debug))
+    |> call_none(Simple.Debug, %{message: "MSG disabled for message"}, id(:debug))
     |> terminate()
 
     nodes
@@ -108,6 +108,6 @@ defmodule PenguinNodes.Flows.Helpers do
   @spec filter_nils(wire :: Wire.t(), id :: Id.t()) :: Wire.t()
   def filter_nils(%Wire{} = wire, id) do
     wire
-    |> call_value_value(Simple.Filter, %{func: &filter_nils/1}, id)
+    |> call_value(Simple.Filter, %{func: &filter_nils/1}, id)
   end
 end
