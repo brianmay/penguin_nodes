@@ -37,24 +37,16 @@ defmodule PenguinNodes.Flows.Tesla do
   def generate_flow(tesla, id) do
     nodes = Nodes.new()
 
-    call_value(
-      nil,
-      Mqtt.In,
-      %{topic: ["teslamate", "cars", Integer.to_string(tesla), "geofence"]},
-      id(:geofence_mqtt)
-    )
+    topic = ["teslamate", "cars", Integer.to_string(tesla), "geofence"]
+    mqtt_in(topic, :raw, id(:geofence_mqtt))
     |> call_value(Simple.Map, %{func: &payload_func/1}, id(:geofence_payload))
     |> call_value(Simple.Changed, %{}, id(:geofence_changed))
     |> call_value(Simple.Map, %{func: &geofence_to_message/1}, id(:geofence_to_message))
     |> message(id(:geofence_message))
     |> terminate()
 
-    call_value(
-      nil,
-      Mqtt.In,
-      %{topic: ["teslamate", "cars", Integer.to_string(tesla), "plugged_in"], format: :json},
-      id(:plugged_in_mqtt)
-    )
+    topic = ["teslamate", "cars", Integer.to_string(tesla), "plugged_in"]
+    mqtt_in(topic, :json, id(:plugged_in_mqtt))
     |> call_value(Simple.Map, %{func: &payload_func/1}, id(:plugged_in_payload))
     |> call_value(Simple.Changed, %{}, id(:plugged_in_changed))
     |> call_value(Simple.Map, %{func: &plugged_in_to_message/1}, id(:plugged_in_to_message))

@@ -29,9 +29,9 @@ defmodule PenguinNodes.Flows.Helpers do
   defp filter_nils(nil), do: false
   defp filter_nils(_), do: true
 
-  @spec mqtt_in(topic :: list(String.t()), id :: Id.t()) :: Wire.t()
-  def mqtt_in(topic, id) do
-    call_value(nil, Mqtt.In, %{topic: topic}, id)
+  @spec mqtt_in(topic :: list(String.t()), format :: :raw | :json, id :: Id.t()) :: Wire.t()
+  def mqtt_in(topic, format \\ :raw, id) do
+    call_value(nil, Mqtt.In, %{topic: topic, format: format}, id)
   end
 
   @spec mqtt_out(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
