@@ -35,44 +35,53 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = node.opts
-    state = assign(state, timer: nil)
+    state = assign(state, timer: nil, sent: nil)
     {:ok, state}
   end
 
   @impl true
   def handle_info(:timer, %NodeModule.State{} = state) do
     :ok = NodeModule.output(state, :value, true)
-    state = assign(state, timer: nil)
+    state = assign(state, timer: nil, sent: true)
     {:noreply, state}
   end
 
   @impl true
   @spec handle_input(:value, any, NodeModule.State.t()) ::
           {:noreply, NodeModule.State.t()}
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   def handle_input(:value, data, %NodeModule.State{} = state) do
     data = !!data
+    sent = state.assigns.sent
 
     cond do
-      state.assigns.timer == nil and data ->
-        # timer not set but requested
+      state.assigns.timer == nil and data == true and sent != true ->
+        # timer not set and we got true and we didn't send true
         timer = Process.send_after(self(), :timer, state.opts.interval)
         state = assign(state, timer: timer)
         {:noreply, state}
 
-      state.assigns.timer != nil and not data ->
+      state.assigns.timer != nil and data == false ->
         # timer set and cancel requested
+        # Note we can't get here is sent == true,
+        # because the timer activation will disable the timer,
+        # and then we can't reset timer until false received.
         Process.cancel_timer(state.assigns.timer)
         state = assign(state, timer: nil)
-        :ok = NodeModule.output(state, :value, false)
         {:noreply, state}
 
-      data ->
-        # timer set and received true
+      data == true ->
+        # we already sent true and received true
         {:noreply, state}
 
-      not data ->
-        # timer not set and received false
+      data == false and sent != false ->
+        # timer not set and received false and didn't send false
         :ok = NodeModule.output(state, :value, false)
+        state = assign(state, sent: false)
+        {:noreply, state}
+
+      data == false ->
+        # timer not set and received false but already sent false
         {:noreply, state}
     end
   end
