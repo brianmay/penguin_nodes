@@ -45,11 +45,16 @@
     <% node_id = @id %>
     <% lines = Map.get(@nodes, node_id, []) %>
     <% {:ok, %Node{} = node} = Config.get_node(node_id) %>
+    <% meta = node.module.get_meta() %>
 
     <h2><%= inspect node_id %></h2>
     <p>module: <%= inspect node.module %></p>
     <%= live_patch "All Nodes", to: get_list_url(@socket) %>
 
+    <h3>Meta Info</h3>
+    <pre><%= inspect(meta, pretty: true) %></pre>
+
+    <h3>Node Info</h3>
     <pre><%= inspect(node, pretty: true) %></pre>
 
     <h3>Inputs</h3>
