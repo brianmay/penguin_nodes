@@ -36,9 +36,8 @@ defmodule PenguinNodes.Flows.Helpers do
 
   @spec mqtt_out(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   if @dry_run do
-    def mqtt_out(%Wire{} = wire, id) do
-      wire
-      |> call_none(Simple.Debug, %{}, id)
+    def mqtt_out(%Wire{} = wire, _id) do
+      wire.nodes
     end
   else
     def mqtt_out(%Wire{} = wire, id) do
@@ -73,18 +72,12 @@ defmodule PenguinNodes.Flows.Helpers do
       mqtt_in(["state", location, "Messages", "power"], id(:mqtt_in))
       |> power_to_boolean(id(:boolean))
 
-    %{value: wire, inverted: debug} =
-      call_map(wire, Simple.Switch, %{switch: mqtt}, %{}, id(:switch))
-
     nodes = Nodes.new()
 
     wire
+    |> call_value(Simple.Switch, %{switch: mqtt}, %{}, id(:switch))
     |> call_value(Simple.Map, %{func: func}, id(:string_to_command))
     |> mqtt_out(id(:mqtt_out))
-    |> terminate()
-
-    debug
-    |> call_none(Simple.Debug, %{message: "MSG disabled for message"}, id(:debug))
     |> terminate()
 
     nodes
@@ -93,6 +86,8 @@ defmodule PenguinNodes.Flows.Helpers do
   @spec message(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
   def message(%Wire{} = wire, id) do
     nodes = Nodes.new()
+
+    wire = call_value(wire, Simple.Debug, %{}, id(:debug))
 
     wire
     |> message_for_location("Brian", id(:brian))
