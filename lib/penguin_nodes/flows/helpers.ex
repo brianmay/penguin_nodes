@@ -87,7 +87,7 @@ defmodule PenguinNodes.Flows.Helpers do
   def message(%Wire{} = wire, id) do
     nodes = Nodes.new()
 
-    wire = call_value(wire, Simple.Debug, %{}, id(:debug))
+    wire = call_value(wire, Simple.Debug, %{message: "Sending message"}, id(:debug))
 
     wire
     |> message_for_location("Brian", id(:brian))
