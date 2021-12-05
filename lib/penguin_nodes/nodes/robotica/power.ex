@@ -45,10 +45,13 @@ defmodule PenguinNodes.Nodes.Robotica.Power do
     power = state.assigns.power
 
     case {scenes, power} do
-      {nil, _} ->
+      {_, nil} ->
         :ok
 
-      {_, nil} ->
+      {_, "HARD_OFF"} ->
+        :ok = NodeModule.output(state, :value, power)
+
+      {nil, _} ->
         :ok
 
       {[], power} ->
