@@ -39,7 +39,7 @@ defmodule PenguinNodes.Flows.Test do
     |> call_value(Simple.Map, %{func: &power_func/1}, id(:power_to_boolean))
     |> call_value(Simple.Changed, %{}, id(:changed))
     |> call_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
-    |> message(id(:message))
+    |> call_none(Simple.Debug, %{}, id(:message))
     |> terminate()
 
     nodes
