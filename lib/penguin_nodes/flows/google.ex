@@ -133,11 +133,11 @@ defmodule PenguinNodes.Flows.Google do
       mqtt_in(["state", location, device, "power"], :raw, id(:power_in))
       |> payload(id(:power_payload))
 
-    scenes =
-      mqtt_in(["state", location, device, "scenes"], :json, id(:scenes_in))
-      |> payload(id(:scenes_payload))
+    priorities =
+      mqtt_in(["state", location, device, "priorities"], :json, id(:priorities_in))
+      |> payload(id(:priorities_payload))
 
-    %{power: power, scenes: scenes}
+    %{power: power, priorities: priorities}
     |> call_value(Robotica.Power, %{}, id(:get_power))
     |> call_value(
       Simple.Map,

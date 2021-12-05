@@ -13,8 +13,8 @@ defmodule PenguinNodes.Nodes.Robotica.Power do
     %Meta{
       description: "Determine if light is on",
       inputs: %{
-        scenes: %Meta.Input{description: "Robotica Scenes", type: :list},
-        power: %Meta.Input{description: "Robotica Power", type: :string}
+        priorities: %Meta.Input{description: "Robotica priorities", type: :list},
+        power: %Meta.Input{description: "Robotica power", type: :string}
       },
       outputs: %{
         value: %Meta.Output{description: "Light power", type: :string}
@@ -35,16 +35,16 @@ defmodule PenguinNodes.Nodes.Robotica.Power do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = node.opts
-    state = assign(state, scenes: nil, power: nil)
+    state = assign(state, priorities: nil, power: nil)
     {:ok, state}
   end
 
   @spec evaluate(state :: NodeModule.State.t()) :: :ok
   defp evaluate(%NodeModule.State{} = state) do
-    scenes = state.assigns.scenes
+    priorities = state.assigns.priorities
     power = state.assigns.power
 
-    case {scenes, power} do
+    case {priorities, power} do
       {_, nil} ->
         :ok
 
@@ -57,9 +57,9 @@ defmodule PenguinNodes.Nodes.Robotica.Power do
       {[], power} ->
         :ok = NodeModule.output(state, :value, power)
 
-      {scenes, _} ->
+      {priorities, _} ->
         power =
-          if Enum.member?(scenes, "default") do
+          if Enum.member?(priorities, 100) do
             "ON"
           else
             "OFF"
@@ -70,10 +70,10 @@ defmodule PenguinNodes.Nodes.Robotica.Power do
   end
 
   @impl true
-  @spec handle_input(:scenes, any(), NodeModule.State.t()) ::
+  @spec handle_input(:priorities, any(), NodeModule.State.t()) ::
           {:noreply, NodeModule.State.t()}
-  def handle_input(:scenes, data, %NodeModule.State{} = state) do
-    state = assign(state, :scenes, data)
+  def handle_input(:priorities, data, %NodeModule.State{} = state) do
+    state = assign(state, :priorities, data)
     evaluate(state)
     {:noreply, state}
   end
