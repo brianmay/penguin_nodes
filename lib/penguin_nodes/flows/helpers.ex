@@ -64,6 +64,12 @@ defmodule PenguinNodes.Flows.Helpers do
     }
   end
 
+  @spec payload_func(Mqtt.Message.t()) :: any()
+  defp payload_func(%Mqtt.Message{payload: payload}), do: payload
+
+  @spec changed_to_func(Simple.Changed.Message.t()) :: any()
+  defp changed_to_func(%Simple.Changed.Message{new: new}), do: new
+
   @spec message_for_location(wire :: Wire.t(), location :: String.t(), id :: Id.t()) :: Nodes.t()
   def message_for_location(%Wire{} = wire, location, id) do
     func = &message_func(&1, location)
@@ -104,5 +110,15 @@ defmodule PenguinNodes.Flows.Helpers do
   def filter_nils(%Wire{} = wire, id) do
     wire
     |> call_value(Simple.Filter, %{func: &filter_nils/1}, id)
+  end
+
+  @spec payload(wire :: Wire.t(), id :: Id.t()) :: Wire.t()
+  def payload(%Wire{} = wire, id) do
+    call_value(wire, Simple.Map, %{func: &payload_func/1}, id)
+  end
+
+  @spec changed_to(wire :: Wire.t(), id :: Id.t()) :: Wire.t()
+  def changed_to(%Wire{} = wire, id) do
+    call_value(wire, Simple.Map, %{func: &changed_to_func/1}, id)
   end
 end

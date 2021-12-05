@@ -6,16 +6,9 @@ defmodule PenguinNodes.Flows.Tesla do
 
   import PenguinNodes.Nodes.Id
   alias PenguinNodes.Nodes.Id
-  alias PenguinNodes.Nodes.Mqtt
   alias PenguinNodes.Nodes.Nodes
   alias PenguinNodes.Nodes.Simple
   alias PenguinNodes.Nodes.Tesla
-
-  @spec payload_func(Mqtt.Message.t()) :: any()
-  defp payload_func(%Mqtt.Message{payload: payload}), do: payload
-
-  @spec changed_to_func(Simple.Changed.Message.t()) :: any()
-  defp changed_to_func(%Simple.Changed.Message{new: new}), do: new
 
   @spec geofence_to_message(Simple.Changed.Message.t()) :: String.t()
   defp geofence_to_message(%Simple.Changed.Message{old: "", new: new}),
@@ -52,36 +45,36 @@ defmodule PenguinNodes.Flows.Tesla do
 
     battery_level =
       mqtt_in(topic, :json, id(:battery_level_mqtt))
-      |> call_value(Simple.Map, %{func: &payload_func/1}, id(:battery_level_payload))
+      |> payload(id(:battery_level_payload))
 
     topic = ["teslamate", "cars", Integer.to_string(tesla), "plugged_in"]
 
     plugged_in =
       mqtt_in(topic, :json, id(:plugged_in_mqtt))
-      |> call_value(Simple.Map, %{func: &payload_func/1}, id(:plugged_in_payload))
+      |> payload(id(:plugged_in_payload))
 
     topic = ["teslamate", "cars", Integer.to_string(tesla), "geofence"]
 
     geofence =
       mqtt_in(topic, :raw, id(:geofence_mqtt))
-      |> call_value(Simple.Map, %{func: &payload_func/1}, id(:geofence_payload))
+      |> payload(id(:geofence_payload))
 
     topic = ["teslamate", "cars", Integer.to_string(tesla), "is_user_present"]
 
     is_user_present =
       mqtt_in(topic, :json, id(:is_user_present_mqtt))
-      |> call_value(Simple.Map, %{func: &payload_func/1}, id(:is_user_present_payload))
+      |> payload(id(:is_user_present_payload))
 
     topic = ["teslamate", "cars", Integer.to_string(tesla), "locked"]
 
     locked =
       mqtt_in(topic, :json, id(:locked_mqtt))
-      |> call_value(Simple.Map, %{func: &payload_func/1}, id(:locked_payload))
+      |> payload(id(:locked_payload))
 
     topic = ["state", "Brian", "TeslaReminder", "power"]
 
     reminder =
-      mqtt_in(topic, :json, id(:reminderr_mqtt))
+      mqtt_in(topic, :raw, id(:reminder_mqtt))
       |> power_to_boolean(id(:boolean))
 
     geofence
@@ -99,7 +92,7 @@ defmodule PenguinNodes.Flows.Tesla do
     %{is_user_present: is_user_present, locked: locked}
     |> call_value(Tesla.Insecure, %{}, id(:insecure))
     |> call_value(Simple.Changed, %{}, id(:insecure_changed))
-    |> call_value(Simple.Map, %{func: &changed_to_func/1}, id(:insecure_changed_to))
+    |> changed_to(id(:insecure_changed_to))
     |> call_value(Simple.Delay, %{interval: 2 * 60 * 1000}, id(:insecure_delay))
     |> call_value(Simple.Map, %{func: &insecure_to_message/1}, id(:insecure_to_message))
     |> message(id(:insecure_message))
@@ -113,7 +106,7 @@ defmodule PenguinNodes.Flows.Tesla do
     }
     |> call_value(Tesla.RequiresPlugin, %{}, id(:requires_plugin))
     |> call_value(Simple.Changed, %{}, id(:requires_plugin_changed))
-    |> call_value(Simple.Map, %{func: &changed_to_func/1}, id(:requires_plugin_changed_to))
+    |> changed_to(id(:requires_plugin_changed_to))
     |> call_value(Simple.Map, %{func: &insecure_to_message/1}, id(:requires_plugin_message))
     |> message(id(:requires_plugin_message))
     |> terminate()
