@@ -183,19 +183,25 @@ defmodule PenguinNodes.Flows.Google do
     light("Brian", "Light", id(:brian_light))
     |> terminate()
 
-    light("Twins", "Light", id(:twins_light))
+    device("Brian", "Fan", id(:brian_fan))
     |> terminate()
 
     light("Dining", "Light", id(:dining_light))
     |> terminate()
 
-    light("Jan", "Light", id(:jan_light))
-    |> terminate()
-
-    device("Brian", "Fan", id(:brian_fan))
-    |> terminate()
-
     device("Dining", "TvSwitch", id(:dining_tv_switch))
+    |> terminate()
+
+    light("Passage", "Light", id(:passage_light))
+    |> terminate()
+
+    light("Twins", "Light", id(:twins_light))
+    |> terminate()
+
+    light("Akira", "Light", id(:akira_light))
+    |> terminate()
+
+    light("Jan", "Light", id(:jan_light))
     |> terminate()
 
     nodes
