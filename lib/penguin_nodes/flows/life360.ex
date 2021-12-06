@@ -90,7 +90,7 @@ defmodule PenguinNodes.Flows.Life360 do
 
     circles
     |> call_value(Simple.Map, %{func: &changed_to_mqtt_message/1}, id(:mqtt_message))
-    |> mqtt_out(id(:mqtt_out))
+    |> mqtt_out(true, id(:mqtt_out))
     |> terminate()
 
     circles
