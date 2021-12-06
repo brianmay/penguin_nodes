@@ -34,15 +34,15 @@ defmodule PenguinNodes.Flows.Helpers do
     call_value(nil, Mqtt.In, %{topic: topic, format: format}, id)
   end
 
-  @spec mqtt_out(wire :: Wire.t(), id :: Id.t()) :: Nodes.t()
+  @spec mqtt_out(wire :: Wire.t(), retain :: boolean(), id :: Id.t()) :: Nodes.t()
   if @dry_run do
-    def mqtt_out(%Wire{} = wire, _id) do
+    def mqtt_out(%Wire{} = wire, _retain \\ false, _id) do
       wire.nodes
     end
   else
-    def mqtt_out(%Wire{} = wire, id) do
+    def mqtt_out(%Wire{} = wire, retain \\ false, id) do
       wire
-      |> call_none(Mqtt.Out, %{format: :json}, id)
+      |> call_none(Mqtt.Out, %{format: :json, retain: retain}, id)
     end
   end
 

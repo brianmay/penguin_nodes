@@ -25,10 +25,12 @@ defmodule PenguinNodes.Nodes.Mqtt.Out do
     """
     @type t :: %__MODULE__{
             topic: list(String.t()) | nil,
-            format: :raw | :json
+            format: :raw | :json,
+            retain: boolean(),
+            qos: integer()
           }
     @enforce_keys []
-    defstruct @enforce_keys ++ [{:format, :raw}, {:topic, nil}]
+    defstruct @enforce_keys ++ [{:format, :raw}, {:topic, nil}, {:retain, false}, {:qos, 0}]
   end
 
   @impl true
@@ -68,11 +70,16 @@ defmodule PenguinNodes.Nodes.Mqtt.Out do
           end
       end
 
+    opts = [
+      retain: state.opts.retain,
+      qos: state.opts.qos
+    ]
+
     if topic == nil do
       error(state, "Message topic not supplied for outgoing message", %{})
     else
       topic = Enum.join(topic, "/")
-      MqttPotion.publish(PenguinNodes.Mqtt, topic, raw_payload)
+      MqttPotion.publish(PenguinNodes.Mqtt, topic, raw_payload, opts)
     end
 
     {:noreply, state}
