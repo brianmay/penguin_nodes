@@ -72,7 +72,7 @@ defmodule PenguinNodes.Nodes.Life360.Circles do
       {:error, error} -> error(state, "life360 error", %{error: error})
     end
 
-    Process.send_after(self(), :timer, 60_000)
+    Process.send_after(self(), :timer, 15_000)
     state
   end
 
