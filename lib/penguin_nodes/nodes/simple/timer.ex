@@ -43,6 +43,19 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
   end
 
   @impl true
+  def restart(%NodeModule.State{} = state, %Node{}) do
+    state =
+      if state.assigns.timer do
+        timer = :timer.send_interval(state.opts.interval, :timer)
+        assign(state, timer: timer)
+      else
+        state
+      end
+
+    {:ok, state}
+  end
+
+  @impl true
   def handle_info(:timer, %NodeModule.State{} = state) do
     :ok = NodeModule.output(state, :value, state.opts.data)
     {:noreply, state}

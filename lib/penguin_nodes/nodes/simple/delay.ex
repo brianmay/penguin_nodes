@@ -40,6 +40,19 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
   end
 
   @impl true
+  def restart(%NodeModule.State{} = state, %Node{}) do
+    state =
+      if state.assigns.timer do
+        timer = Process.send_after(self(), :timer, state.opts.interval)
+        assign(state, timer: timer)
+      else
+        state
+      end
+
+    {:ok, state}
+  end
+
+  @impl true
   def handle_info(:timer, %NodeModule.State{} = state) do
     :ok = NodeModule.output(state, :value, true)
     state = assign(state, timer: nil, sent: true)

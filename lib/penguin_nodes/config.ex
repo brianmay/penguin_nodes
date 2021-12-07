@@ -24,6 +24,11 @@ defmodule PenguinNodes.Config do
     GenServer.call(pid, {:get_node, id})
   end
 
+  @spec get_nodes(pid :: GenServer.server()) :: Nodes.t()
+  def get_nodes(pid \\ __MODULE__) do
+    GenServer.call(pid, :get_nodes)
+  end
+
   # Server (callbacks)
   @spec nodes :: Nodes.t()
   defp nodes do
@@ -46,5 +51,10 @@ defmodule PenguinNodes.Config do
   def handle_call({:get_node, id}, _from, %Nodes{} = state) do
     node = Map.fetch(state.map, id)
     {:reply, node, state}
+  end
+
+  @impl true
+  def handle_call(:get_nodes, _from, %Nodes{} = state) do
+    {:reply, state, state}
   end
 end

@@ -53,6 +53,7 @@ defmodule PenguinNodes.Application do
        handler: PenguinNodes.MqttHandler,
        subscriptions: []},
       {Finch, name: PenguinNodes.Finch},
+      {DeltaCrdt, crdt: DeltaCrdt.AWLWWMap, name: PenguinNodes.Crdt},
       {Config, name: Config}
     ]
 

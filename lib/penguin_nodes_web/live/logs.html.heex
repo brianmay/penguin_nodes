@@ -1,9 +1,11 @@
 <h1>Logs</h1>
 
+<% nodes = Config.get_nodes(Config) %>
+
 <%= if @id == nil do %>
-    <% keys = Map.keys(@nodes) |> Enum.sort() %>
+    <% keys = nodes.map |> Map.keys() |> Enum.sort() %>
     <%= for node_id <- keys do %>
-        <% lines = Map.fetch!(@nodes, node_id) %>
+        <% lines = Map.get(@nodes, node_id, []) %>
 
         <h2><%= inspect node_id %></h2>
         <%= live_patch "Node", to: get_node_url(@socket, node_id) %>
@@ -43,9 +45,9 @@
     <% end %>
 <% else %>
     <% node_id = @id %>
+    <% %Node{} = node = Map.get(nodes.map, node_id, %{}) %>
     <% lines = Map.get(@nodes, node_id, []) %>
-    <% state = GenServer.call({:global, node_id}, :get_state) %>
-    <% {:ok, %Node{} = node} = Config.get_node(node_id) %>
+    <% state = DeltaCrdt.get(PenguinNodes.Crdt, node_id) %>
     <% meta = node.module.get_meta() %>
 
     <h2><%= inspect node_id %></h2>
