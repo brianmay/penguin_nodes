@@ -246,6 +246,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
   end
 
   @spec log(atom(), State.t(), String.t(), map()) :: :ok
+  def log(:debug, %State{}, _message, _values), do: :ok
+
   def log(level, %State{} = state, message, values) do
     {:ok, hostname} = :inet.gethostname()
     hostname = to_string(hostname)
