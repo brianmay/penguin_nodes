@@ -74,7 +74,7 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
         # we already sent true and received true
         {:noreply, state}
 
-      data == false and sent != false ->
+      data == false and sent != false and sent != nil ->
         # timer not set and received false and didn't send false
         :ok = NodeModule.output(state, :value, false)
         state = assign(state, sent: false)
