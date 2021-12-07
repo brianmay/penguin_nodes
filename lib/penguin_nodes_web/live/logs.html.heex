@@ -44,6 +44,7 @@
 <% else %>
     <% node_id = @id %>
     <% lines = Map.get(@nodes, node_id, []) %>
+    <% state = GenServer.call({:global, node_id}, :get_state) %>
     <% {:ok, %Node{} = node} = Config.get_node(node_id) %>
     <% meta = node.module.get_meta() %>
 
@@ -56,6 +57,9 @@
 
     <h3>Node Info</h3>
     <pre><%= inspect(node, pretty: true) %></pre>
+
+    <h3>Node State</h3>
+    <pre><%= inspect(state, pretty: true) %></pre>
 
     <h3>Inputs</h3>
     <%= for {key, output_list} <- node.inputs do%>
