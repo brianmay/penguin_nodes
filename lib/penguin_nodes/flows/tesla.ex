@@ -78,6 +78,7 @@ defmodule PenguinNodes.Flows.Tesla do
       |> power_to_boolean(id(:boolean))
 
     geofence
+    |> call_value(Simple.Debug, %{}, id(:geofence_debug))
     |> call_value(Simple.Changed, %{}, id(:geofence_changed))
     |> call_value(Simple.Map, %{func: &geofence_to_message/1}, id(:geofence_to_message))
     |> message(id(:geofence_message))

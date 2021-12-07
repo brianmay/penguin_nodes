@@ -69,6 +69,10 @@ defmodule PenguinNodesWeb.Live.Logs do
   end
 
   @impl true
+  def handle_info(%{topic: "logs", event: _, payload: %{level: :debug}}, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info(%{topic: "logs", event: _, payload: payload}, socket) do
     nodes = socket.assigns.nodes
     key = payload.node_id
