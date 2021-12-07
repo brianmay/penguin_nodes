@@ -37,6 +37,13 @@ defmodule PenguinNodes.Flows.Tesla do
   defp insecure_to_message(false),
     do: "The tesla is feeling secure"
 
+  @spec requires_plugin_to_message(boolean()) :: String.t()
+  defp requires_plugin_to_message(true),
+    do: "The tesla requires plugging in"
+
+  defp requires_plugin_to_message(false),
+    do: "The tesla no longer requires plugging in"
+
   @spec generate_flow(integer(), id :: Id.t()) :: Nodes.t()
   def generate_flow(tesla, id) do
     nodes = Nodes.new()
@@ -108,7 +115,11 @@ defmodule PenguinNodes.Flows.Tesla do
     |> call_value(Tesla.RequiresPlugin, %{}, id(:requires_plugin))
     |> call_value(Simple.Changed, %{}, id(:requires_plugin_changed))
     |> changed_to(id(:requires_plugin_changed_to))
-    |> call_value(Simple.Map, %{func: &insecure_to_message/1}, id(:requires_plugin_message))
+    |> call_value(
+      Simple.Map,
+      %{func: &requires_plugin_to_message/1},
+      id(:requires_plugin_message)
+    )
     |> message(id(:requires_plugin_message))
     |> terminate()
 
