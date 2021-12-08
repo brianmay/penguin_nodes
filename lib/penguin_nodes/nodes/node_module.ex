@@ -436,8 +436,8 @@ defmodule PenguinNodes.Nodes.NodeModule do
   def save_state_from_rc({:noreply, %State{} = state, _}), do: save_state(state)
   def save_state_from_rc({:reply, _, %State{} = state}), do: save_state(state)
   def save_state_from_rc({:reply, _, %State{} = state, _}), do: save_state(state)
-  def save_state_from_rc({:ok, _, %State{} = state}), do: save_state(state)
-  def save_state_from_rc({:ok, _, %State{} = state, _}), do: save_state(state)
+  def save_state_from_rc({:ok, %State{} = state}), do: save_state(state)
+  def save_state_from_rc({:ok, %State{} = state, _}), do: save_state(state)
   def save_state_from_rc(_), do: :ok
 
   @spec save_state(State.t()) :: :ok
