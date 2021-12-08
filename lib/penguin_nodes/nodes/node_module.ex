@@ -313,18 +313,20 @@ defmodule PenguinNodes.Nodes.NodeModule do
   def handle_continue({:_init, %Node{} = node}, nil) do
     module = node.module
 
-    assigns = DeltaCrdt.get(PenguinNodes.Crdt, node.node_id)
+    rc = Horde.Registry.meta(PenguinNodes.Registry, node.node_id)
 
     {init, assigns} =
       cond do
-        assigns == nil ->
+        rc == :error ->
           {&node.module.init/2, %{}}
 
         function_exported?(node.module, :restart, 2) ->
+          {:ok, assigns} = rc
           init = &node.module.restart/2
           {init, assigns}
 
         true ->
+          {:ok, assigns} = rc
           init = fn %State{} = state, %Node{} -> {:ok, state} end
           {init, assigns}
       end
@@ -442,7 +444,6 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @spec save_state(State.t()) :: :ok
   def save_state(%State{} = state) do
-    DeltaCrdt.put(PenguinNodes.Crdt, state.node_id, state.assigns)
-    :ok
+    :ok = Horde.Registry.put_meta(PenguinNodes.Registry, state.node_id, state.assigns)
   end
 end

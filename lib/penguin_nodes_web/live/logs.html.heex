@@ -47,7 +47,12 @@
     <% node_id = @id %>
     <% %Node{} = node = Map.get(nodes.map, node_id, %{}) %>
     <% lines = Map.get(@nodes, node_id, []) %>
-    <% state = DeltaCrdt.get(PenguinNodes.Crdt, node_id) %>
+    <% state =
+          case Horde.Registry.meta(PenguinNodes.Registry, node.node_id) do
+            :error -> nil
+            {:ok, state} -> state
+          end
+    %>
     <% meta = node.module.get_meta() %>
 
     <h2><%= inspect node_id %></h2>
