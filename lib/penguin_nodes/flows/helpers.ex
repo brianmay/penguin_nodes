@@ -76,14 +76,12 @@ defmodule PenguinNodes.Flows.Helpers do
 
     mqtt =
       mqtt_in(["state", location, "Messages", "power"], id(:mqtt_in))
-      |> power_to_boolean(id(:switch_boolean))
-      |> call_value(Simple.Debug, %{message: "Switch state"}, id(:switch_debug))
+      |> power_to_boolean(id(:boolean))
 
     nodes = Nodes.new()
 
     wire
     |> call_value(Simple.Switch, %{switch: mqtt}, %{}, id(:switch))
-    |> call_value(Simple.Debug, %{message: "Sending message"}, id(:string_debug))
     |> call_value(Simple.Map, %{func: func}, id(:string_to_command))
     |> mqtt_out(id(:mqtt_out))
     |> terminate()
