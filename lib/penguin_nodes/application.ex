@@ -53,7 +53,7 @@ defmodule PenguinNodes.Application do
        handler: PenguinNodes.MqttHandler,
        subscriptions: []},
       {Finch, name: PenguinNodes.Finch},
-      {Horde.Registry, [name: PenguinNodes.Registry, keys: :unique]},
+      {Horde.Registry, [name: PenguinNodes.Registry, keys: :unique, members: :auto]},
       {Config, name: Config}
     ]
 
