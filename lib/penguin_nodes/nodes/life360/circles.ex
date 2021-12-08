@@ -40,6 +40,12 @@ defmodule PenguinNodes.Nodes.Life360.Circles do
     {:ok, state}
   end
 
+  @impl true
+  def restart(%NodeModule.State{} = state, %Node{}) do
+    Process.send_after(self(), :timer, 0)
+    {:ok, state}
+  end
+
   @spec do_circles(state :: NodeModule.State.t(), login :: map(), circles :: list(map())) ::
           {:error, String.t() | Finch.Error.t()} | :ok
   defp do_circles(_, _, []) do
