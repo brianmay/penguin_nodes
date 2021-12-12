@@ -52,18 +52,18 @@ defmodule PenguinNodes.Flows.Google do
         color
       end
 
-    {turn_on, turn_off} =
+    scene =
       case {location, device} do
-        {"Brian", "Light"} -> {"auto", "turn_off"}
-        {_, _} -> {"turn_on", "turn_off"}
+        {"Brian", "Light"} -> "auto"
+        {_, _} -> "default"
       end
 
-    action = if input["on"], do: turn_on, else: turn_off
+    action = if input["on"], do: nil, else: "turn_off"
 
     payload = %{
       "action" => action,
       "color" => color,
-      "scene" => "default"
+      "scene" => scene
     }
 
     %Mqtt.Message{
