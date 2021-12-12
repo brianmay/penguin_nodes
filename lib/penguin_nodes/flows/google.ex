@@ -52,7 +52,13 @@ defmodule PenguinNodes.Flows.Google do
         color
       end
 
-    action = if input["on"], do: "turn_on", else: "turn_off"
+    {turn_on, turn_off} =
+      case {location, device} do
+        {"Brian", "Light"} -> {"auto", "turn_off"}
+        {_, _} -> {"turn_on", "turn_off"}
+      end
+
+    action = if input["on"], do: turn_on, else: turn_off
 
     payload = %{
       "action" => action,
