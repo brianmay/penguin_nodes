@@ -33,7 +33,6 @@ defmodule PenguinNodes.Application do
       PenguinNodesWeb.Endpoint,
       {Phoenix.PubSub, [name: PenguinNodes.PubSub, adapter: Phoenix.PubSub.PG2]},
       {PenguinNodes.Nodes.Id, [name: PenguinNodes.Nodes.Id]},
-      {PenguinNodes.MqttMultiplexer, []},
       {MqttPotion.Connection,
        name: PenguinNodes.Mqtt,
        host: mqtt_host,
@@ -52,6 +51,7 @@ defmodule PenguinNodes.Application do
        ],
        handler: PenguinNodes.MqttHandler,
        subscriptions: []},
+      {MqttPotion.Multiplexer, [mqtt_potion: PenguinNodes.Mqtt]},
       {Finch, name: PenguinNodes.Finch},
       {Horde.Registry, [name: PenguinNodes.Registry, keys: :unique, members: :auto]},
       {Config, name: Config}

@@ -4,7 +4,7 @@ defmodule PenguinNodes.Nodes.Mqtt.In do
   """
   use PenguinNodes.Nodes.NodeModule
 
-  alias PenguinNodes.MqttMultiplexer
+  alias MqttPotion.Multiplexer
   alias PenguinNodes.Nodes.Meta
   alias PenguinNodes.Nodes.Mqtt.Message
   alias PenguinNodes.Nodes.Node
@@ -36,14 +36,14 @@ defmodule PenguinNodes.Nodes.Mqtt.In do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
-    MqttMultiplexer.subscribe(options.topic, :mqtt, self(), options.format, options.resend)
+    Multiplexer.subscribe(options.topic, :mqtt, self(), options.format, options.resend)
     {:ok, state}
   end
 
   @impl true
   def restart(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = options = node.opts
-    MqttMultiplexer.subscribe(options.topic, :mqtt, self(), options.format, options.resend)
+    Multiplexer.subscribe(options.topic, :mqtt, self(), options.format, options.resend)
     {:ok, state}
   end
 
