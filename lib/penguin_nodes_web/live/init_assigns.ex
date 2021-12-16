@@ -6,7 +6,7 @@ defmodule PenguinNodesWeb.InitAssigns do
 
   alias PenguinNodesWeb.Router.Helpers, as: Routes
 
-  def mount(_params, session, socket) do
+  def on_mount(:default, _params, session, socket) do
     user = session["claims"]
 
     if user == nil do
