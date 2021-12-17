@@ -44,7 +44,7 @@ defmodule PenguinNodesWeb.LayoutView do
                       <button class={link_class(@active, "user")} data-dropdown-toggle="dropdown">
                           <%= @user["name"] %> <svg class="inline w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                       </button>
-                      <div id="dropdown" class="absolute left-0 invisible transition-all bg-white border border-2 border-gray-800 rounded opacity-0 w-60 top-full group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-1">
+                      <div id="dropdown" class="absolute left-0 hidden transition-all bg-white border border-2 border-gray-800 rounded opacity-0 w-60 top-full group-focus-within:block group-focus-within:opacity-100 group-focus-within:translate-y-1">
                           <%= link "Logout", to: Routes.page_path(@conn, :logout), method: :post, class: link_class(@active, "logout") %>
                       </div>
                     <% else %>
