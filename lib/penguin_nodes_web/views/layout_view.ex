@@ -72,7 +72,7 @@ defmodule PenguinNodesWeb.LayoutView do
         <!-- mobile menu -->
         <div class="hidden mobile-menu">
             <ul class="">
-                <%= live_redirect("Home", to: Routes.page_path(@conn, :index), class: mobile_link_class(@active, "Home")) %>
+                <%= live_redirect("Home", to: Routes.page_path(@conn, :index), class: mobile_link_class(@active, "home")) %>
                 <%= live_redirect("Logs", to: Routes.logs_path(@conn, :index), class: mobile_link_class(@active, "logs")) %>
                 <%= if PenguinNodesWeb.Auth.user_is_admin?(@user) do %>
                     <%= live_redirect("Dashboard", to: Routes.live_dashboard_path(@conn, :home), class: mobile_link_class(@active, "dashboard")) %>
