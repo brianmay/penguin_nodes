@@ -122,7 +122,7 @@ defmodule PenguinNodes.Flows.Google do
   def light(location, device, id) do
     nodes = Nodes.new()
 
-    mqtt_in(["google", location, device, "out"], :json, id(:google_in))
+    mqtt_in(["google", location, device, "out"], :json, :no_resend, id(:google_in))
     |> call_value(
       Simple.Map,
       %{func: &light_google_to_robotica(&1, location, device)},
