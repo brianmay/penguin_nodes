@@ -16,6 +16,7 @@ defmodule PenguinNodesWeb.Live.Logs do
     socket =
       socket
       |> assign(:nodes, %{})
+      |> assign(:active, "logs")
 
     Endpoint.subscribe("logs")
 
@@ -35,12 +36,12 @@ defmodule PenguinNodesWeb.Live.Logs do
   end
 
   @spec get_class(log :: map()) :: String.t() | nil
-  defp get_class(%{level: :debug}), do: "alert-light"
-  defp get_class(%{level: :info}), do: "alert-secondary"
-  defp get_class(%{level: :notice}), do: "alert-primary"
-  defp get_class(%{level: :warning}), do: "alert-warning"
-  defp get_class(%{level: :error}), do: "alert-danger"
-  defp get_class(_), do: nil
+  defp get_class(%{level: :debug}), do: "border-b alert-light"
+  defp get_class(%{level: :info}), do: "border-b alert-secondary"
+  defp get_class(%{level: :notice}), do: "border-b alert-primary"
+  defp get_class(%{level: :warning}), do: "border-b alert-warning"
+  defp get_class(%{level: :error}), do: "border-b alert-danger"
+  defp get_class(_), do: "border-b"
 
   @spec id_to_string(id :: Id.t()) :: String.t()
   defp id_to_string(id) do

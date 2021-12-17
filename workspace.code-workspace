@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"tailwindCSS.includeLanguages": {
+			"phoenix-heex": "html"
+		},
+	}
+}

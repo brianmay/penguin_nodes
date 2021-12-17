@@ -2,6 +2,7 @@
   "license": "GPL-3",
   "scripts": {
     "deploy": "webpack --mode production",
+    "deploy_css": "NODE_ENV=production tailwindcss --postcss --minify --input=css/app.css --output=../priv/static/css/app.css",
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
@@ -9,26 +10,28 @@
     "classlist-polyfill": "^1.2.0",
     "formdata-polyfill": "^4.0.10",
     "mdn-polyfills": "^5.20.0",
-    "url-search-params-polyfill": "^8.1.1",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
-    "topbar": "^1.0.0"
+    "topbar": "^1.0.0",
+    "url-search-params-polyfill": "^8.1.1"
   },
   "devDependencies": {
+    "@popperjs/core": "^2.11.0",
+    "autoprefixer": "^10.4.0",
     "copy-webpack-plugin": "^10.1.0",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.2.0",
     "glob": "7.2.0",
     "mini-css-extract-plugin": "^2.4.5",
-    "webpack": "5.65.0",
-    "webpack-cli": "^4.9.1",
     "node-sass": "^7.0.0",
-    "sass-loader": "^12.4.0",
-    "bootstrap": "^5.1.3",
-    "@popperjs/core": "^2.11.0",
+    "postcss": "^8.4.5",
     "prettier": "^2.2.1",
-    "prettier-plugin-eex": "^0.5.0"
+    "prettier-plugin-eex": "^0.5.0",
+    "sass-loader": "^12.4.0",
+    "tailwindcss": "^3.0.6",
+    "webpack": "5.65.0",
+    "webpack-cli": "^4.9.1"
   },
   "engines": {
     "node": ">=14.x"

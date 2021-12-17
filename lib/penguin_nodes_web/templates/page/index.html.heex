@@ -1,13 +1,2 @@
-<h1><%= gettext "Welcome to %{name}!", name: "PenguinNodes" %></h1>
-<p>Protect your money from energy companies.</p>
-
-<% user = PenguinNodesWeb.Auth.current_user(@conn) %>
-<%= if user != nil do %>
-  <ul>
-    <li>
-      <%= link "Logout", to: Routes.page_path(@conn, :logout), method: :post %>
-    </li>
-  </ul>
-<% else %>
-  Please <%= live_redirect("Login", to: Routes.page_path(@conn, :login)) %>.
-<% end %>
+<h1 class="text-center text-green-500 text-9xl"><%= gettext "Welcome to %{name}!", name: "PenguinNodes" %></h1>
+<p class="text-xl text-center text-red-500" >Reliable control of IOT devices.</p>

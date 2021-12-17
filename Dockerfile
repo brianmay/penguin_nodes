@@ -40,6 +40,7 @@ RUN \
   cd /opt/app/assets && \
   npm install && \
   npm run deploy && \
+  npm run deploy_css && \
   cd .. && \
   mix phx.digest;
 

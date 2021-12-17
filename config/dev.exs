@@ -18,6 +18,14 @@ config :penguin_nodes, PenguinNodesWeb.Endpoint,
       "--watch",
       "--watch-options-stdin",
       cd: Path.expand("../assets", __DIR__)
+    ],
+    npx: [
+      "tailwindcss",
+      "--input=css/app.css",
+      "--output=../priv/static/css/app.css",
+      "--postcss",
+      "--watch",
+      cd: Path.expand("../assets", __DIR__)
     ]
   ]
 

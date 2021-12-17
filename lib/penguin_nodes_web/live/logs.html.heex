@@ -7,34 +7,34 @@
     <%= for node_id <- keys do %>
         <% lines = Map.get(@nodes, node_id, []) %>
 
-        <h2><%= inspect node_id %></h2>
-        <%= live_patch "Node", to: get_node_url(@socket, node_id) %>
-        <table class="table">
-            <thead>
-                <th>Time</th>
-                <th>Level</th>
-                <th>Hostname</th>
-                <th>Message</th>
-                <th>Values</th>
-                <th>State</th>
+        <h2><%= live_patch inspect(node_id), to: get_node_url(@socket, node_id), class: "hover:text-blue-500" %></h2>
+
+        <table class="w-full border-b border-gray-200 shadow-lg table-fixed">
+            <thead class="text-white bg-black">
+                <th class="w-40">Time</th>
+                <th class="w-40 border-l border-white">Level</th>
+                <th class="w-40 border-l border-white">Hostname</th>
+                <th class="border-l border-white w-50">Message</th>
+                <th class="border-l border-white w-50">Values</th>
+                <th class="border-l border-white w-50">State</th>
             </thead>
 
             <tbody>
                 <%= for line <- lines do %>
-                    <tr phx-click="select" phx-data-id={id_to_string(node_id)} class={get_class(line)}>
-                        <td><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
-                        <td><%= inspect line.level %></td>
-                        <td><%= line.hostname %></td>
-                        <td><%= line.message %></td>
-                        <td>
+                    <tr class={get_class(line)}>
+                        <td class=""><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                        <td class="border-l"><%= inspect line.level %></td>
+                        <td class="border-l"><%= line.hostname %></td>
+                        <td class="border-l"><%= line.message %></td>
+                        <td class="border-l">
                             <div class="hover">
-                                <div class="trigger truncate"><%= inspect(line.values) |> String.slice(0..30) %></div>
+                                <div class="truncate trigger"><%= inspect(line.values) |> String.slice(0..30) %></div>
                                 <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
                             </div>
                         </td>
-                        <td>
+                        <td class="border-l">
                             <div class="hover">
-                                <div class="trigger truncate"><%= inspect(line.state) |> String.slice(0..30) %></div>
+                                <div class="truncate trigger"><%= inspect(line.state) |> String.slice(0..30) %></div>
                                 <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
                             </div>
                         </td>
@@ -54,10 +54,11 @@
           end
     %>
     <% meta = node.module.get_meta() %>
+    <%= live_patch "View all", to: get_list_url(@socket), class: "btn btn-blue" %>
 
-    <h2><%= inspect node_id %></h2>
+
+    <h2><%= inspect(node_id) %></h2>
     <p>module: <%= inspect node.module %></p>
-    <%= live_patch "All Nodes", to: get_list_url(@socket) %>
 
     <h3>Meta Info</h3>
     <pre><%= inspect(meta, pretty: true) %></pre>
@@ -95,32 +96,32 @@
     <% end %>
 
 
-    <table class="table">
-        <thead>
-            <th>Time</th>
-            <th>Level</th>
-            <th>Hostname</th>
-            <th>Message</th>
-            <th>Values</th>
-            <th>State</th>
+    <table class="w-full border-b border-gray-200 shadow-lg table-fixed">
+        <thead class="text-white bg-black">
+            <th class="w-40">Time</th>
+            <th class="w-40 border-l border-white">Level</th>
+            <th class="w-40 border-l border-white">Hostname</th>
+            <th class="border-l border-white w-50">Message</th>
+            <th class="border-l border-white w-50">Values</th>
+            <th class="border-l border-white w-50">State</th>
         </thead>
 
         <tbody>
             <%= for line <- lines do %>
-                <tr phx-click="select" phx-data-id={id_to_string(node_id)} class={get_class(line)}>
-                    <td><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
-                    <td><%= inspect line.level %></td>
-                    <td><%= line.hostname %></td>
-                    <td><%= line.message %></td>
-                    <td>
+                <tr class={get_class(line)}>
+                    <td class=""><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                    <td class="border-l"><%= inspect line.level %></td>
+                    <td class="border-l"><%= line.hostname %></td>
+                    <td class="border-l"><%= line.message %></td>
+                    <td class="border-l">
                         <div class="hover">
-                            <div class="trigger truncate"><%= inspect(line.values) |> String.slice(0..30) %></div>
+                            <div class="truncate trigger"><%= inspect(line.values) |> String.slice(0..30) %></div>
                             <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
                         </div>
                     </td>
-                    <td>
+                    <td class="border-l">
                         <div class="hover">
-                            <div class="trigger truncate"><%= inspect(line.state) |> String.slice(0..30) %></div>
+                            <div class="truncate trigger"><%= inspect(line.state) |> String.slice(0..30) %></div>
                             <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
                         </div>
                     </td>
