@@ -15,6 +15,7 @@ defmodule PenguinNodes.Flows.Test do
   @spec power_func(Mqtt.Message.t()) :: power_status()
   defp power_func(%Mqtt.Message{payload: "OFF"}), do: false
   defp power_func(%Mqtt.Message{payload: "HARD_OFF"}), do: :offline
+  defp power_func(%Mqtt.Message{payload: "ERROR"}), do: :unknown
   defp power_func(%Mqtt.Message{payload: "ON"}), do: true
   defp power_func(%Mqtt.Message{}), do: :unknown
 

@@ -79,6 +79,7 @@ defmodule PenguinNodes.Flows.Google do
         "ON" -> %{"on" => true, "online" => true}
         "OFF" -> %{"on" => false, "online" => true}
         "HARD_OFF" -> %{"on" => false, "online" => false}
+        "ERROR" -> %{"on" => false, "online" => false}
       end
 
     %Mqtt.Message{
@@ -110,6 +111,7 @@ defmodule PenguinNodes.Flows.Google do
         "ON" -> %{"on" => true, "online" => true}
         "OFF" -> %{"on" => false, "online" => true}
         "HARD_OFF" -> %{"on" => false, "online" => false}
+        "ERROR" -> %{"on" => false, "online" => false}
       end
 
     %Mqtt.Message{

@@ -18,6 +18,7 @@ defmodule PenguinNodes.Flows.Helpers do
   defp power_to_boolean_func(%Mqtt.Message{payload: "OFF"}), do: false
   defp power_to_boolean_func(%Mqtt.Message{payload: "HARD_OFF"}), do: false
   defp power_to_boolean_func(%Mqtt.Message{payload: "ON"}), do: true
+  defp power_to_boolean_func(%Mqtt.Message{payload: "ERROR"}), do: false
   defp power_to_boolean_func(%Mqtt.Message{}), do: nil
 
   @spec power_to_boolean(wire :: Wire.t(), id :: Id.t()) :: Wire.t()

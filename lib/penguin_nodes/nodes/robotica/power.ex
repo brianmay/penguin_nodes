@@ -51,6 +51,9 @@ defmodule PenguinNodes.Nodes.Robotica.Power do
       {_, "HARD_OFF"} ->
         :ok = NodeModule.output(state, :value, power)
 
+      {_, "ERROR"} ->
+        :ok = NodeModule.output(state, :value, power)
+
       {nil, _} ->
         :ok
 
