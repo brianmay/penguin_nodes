@@ -4,9 +4,7 @@
 
 <main role="main" class="container">
     <%= for {flash_key, flash_message} <- @flash do %>
-        <p class={"alert alert-#{flash_key}"} phx-click="lv:clear-flash">
-            <%= flash_message %>
-        </p>
+        <p class={"border m-4 px-4 py-3 rounded alert-#{flash_key}"}><%= flash_message %></p>
     <% end %>
     <div class="p-10">
         <%= @inner_content %>
