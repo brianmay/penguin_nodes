@@ -37,12 +37,8 @@ RUN mix deps.compile
 # This step builds assets for the Phoenix app (if there is one)
 COPY assets /opt/app/assets/
 RUN \
-  cd /opt/app/assets && \
-  npm install && \
-  npm run deploy && \
-  npm run deploy_css && \
-  cd .. && \
-  mix phx.digest;
+  npm --prefix assets install && \
+  npm --prefix assets run deploy
 
 # Setup access to version information
 ARG BUILD_DATE=date
@@ -53,6 +49,8 @@ ENV VCS_REF=${VCS_REF}
 WORKDIR /opt/app
 COPY lib /opt/app/lib/
 COPY priv /opt/app/priv/
+RUN npm --prefix assets run deploy_css
+RUN mix phx.digest
 RUN mix compile
 COPY rel /opt/app/rel/
 RUN mix release
