@@ -2,15 +2,15 @@ defmodule PenguinNodesWeb.LayoutView do
   use PenguinNodesWeb, :view
 
   def link_class(active, item) when active == item do
-    "py-4 px-2 text-green-500 border-b-4 border-green-500 font-semibold"
+    "py-4 px-2 text-green-500 dark:text-green-100 border-b-4 border-green-500 font-semibold"
   end
 
   def link_class(_active, _item) do
-    "py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300"
+    "py-4 px-2 text-gray-500 dark:text-green-100 font-semibold hover:text-green-500 transition duration-300"
   end
 
   def mobile_link_class(active, item) when active == item do
-    "block text-sm px-2 py-4 text-white bg-green-500 font-semibold"
+    "block text-sm px-2 py-4 bg-green-500 font-semibold"
   end
 
   def mobile_link_class(_active, _item) do
@@ -19,7 +19,7 @@ defmodule PenguinNodesWeb.LayoutView do
 
   def nav(assigns) do
     ~H"""
-      <nav class="bg-white shadow-lg">
+      <nav class="shadow-lg dark:shadow-gray-500">
         <div class="max-w-6xl px-4 mx-auto">
             <div class="flex justify-between">
                 <div class="flex space-x-7">
@@ -45,7 +45,7 @@ defmodule PenguinNodesWeb.LayoutView do
                           <button class={link_class(@active, "user")} data-dropdown-toggle="dropdown">
                               <%= @user["name"] %> <svg class="inline w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                           </button>
-                          <div id="dropdown" class="absolute right-0 invisible transition-all bg-white border border-2 border-gray-800 rounded opacity-0 w-60 top-full group-focus-within:visible group-focus-within:opacity-100">
+                          <div id="dropdown" class="absolute right-0 invisible transition-all border border-2 border-gray-800 dark:border-gray-500 rounded opacity-0 w-60 top-full group-focus-within:visible group-focus-within:opacity-100">
                               <%= link "Logout", to: Routes.page_path(@conn, :logout), method: :post, class: link_class(@active, "logout") %>
                           </div>
                       </div>

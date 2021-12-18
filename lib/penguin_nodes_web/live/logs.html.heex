@@ -8,45 +8,12 @@
         <% lines = Map.get(@nodes, node_id, []) %>
 
         <h2><%= live_patch inspect(node_id), to: get_node_url(@socket, node_id), class: "hover:text-blue-500" %></h2>
-
-        <table class="w-full border-b border-gray-200 shadow-lg table-fixed">
-            <thead class="text-white bg-black">
-                <th class="w-40">Time</th>
-                <th class="hidden w-40 border-l border-white lg:table-cell">Level</th>
-                <th class="hidden w-40 border-l border-white lg:table-cell">Hostname</th>
-                <th class="border-l border-white w-50">Message</th>
-                <th class="hidden border-l border-white w-50 md:table-cell">Values</th>
-                <th class="hidden border-l border-white w-50 md:table-cell">State</th>
-            </thead>
-
-            <tbody>
-                <%= for line <- lines do %>
-                    <tr class={get_class(line)}>
-                        <td class=""><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
-                        <td class="hidden border-l lg:table-cell"><%= inspect line.level %></td>
-                        <td class="hidden border-l lg:table-cell"><%= line.hostname %></td>
-                        <td class="border-l"><%= line.message %></td>
-                        <td class="hidden border-l md:table-cell">
-                            <div class="hover">
-                                <div class="truncate trigger"><%= inspect(line.values) |> String.slice(0..30) %></div>
-                                <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
-                            </div>
-                        </td>
-                        <td class="hidden border-l md:table-cell">
-                            <div class="hover">
-                                <div class="truncate trigger"><%= inspect(line.state) |> String.slice(0..30) %></div>
-                                <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
-                            </div>
-                        </td>
-                    </tr>
-                <% end %>
-            </tbody>
-        </table>
+        <.logs lines={lines}/>
     <% end %>
 <% else %>
     <% node_id = @id %>
     <% %Node{} = node = Map.get(nodes.map, node_id, %{}) %>
-    <% lines = Map.get(@nodes, node_id, []) %>
+    <% _lines = Map.get(@nodes, node_id, []) %>
     <% state =
           case Horde.Registry.meta(PenguinNodes.Registry, node.node_id) do
             :error -> nil
@@ -94,39 +61,11 @@
         </ul>
     <% end %>
 
-
-    <table class="w-full border-b border-gray-200 shadow-lg table-fixed">
-        <thead class="text-white bg-black">
-            <th class="w-40">Time</th>
-            <th class="hidden w-40 border-l border-white lg:table-cell">Level</th>
-            <th class="hidden w-40 border-l border-white lg:table-cell">Hostname</th>
-            <th class="border-l border-white w-50">Message</th>
-            <th class="hidden border-l border-white w-50 md:table-cell">Values</th>
-            <th class="hidden border-l border-white w-50 md:table-cell">State</th>
-        </thead>
-
-        <tbody>
-            <%= for line <- lines do %>
-                <tr class={get_class(line)}>
-                    <td class=""><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
-                    <td class="hidden border-l lg:table-cell"><%= inspect line.level %></td>
-                    <td class="hidden border-l lg:table-cell"><%= line.hostname %></td>
-                    <td class="border-l"><%= line.message %></td>
-                    <td class="hidden border-l md:table-cell">
-                        <div class="hover">
-                            <div class="truncate trigger"><%= inspect(line.values) |> String.slice(0..30) %></div>
-                            <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
-                        </div>
-                    </td>
-                    <td class="hidden border-l md:table-cell">
-                        <div class="hover">
-                            <div class="truncate trigger"><%= inspect(line.state) |> String.slice(0..30) %></div>
-                            <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
-                        </div>
-                    </td>
-                </tr>
-            <% end %>
-        </tbody>
-    </table>
+    <% # https://github.com/phoenixframework/phoenix_live_view/issues/1805 %>
+    <% keys = nodes.map |> Map.keys() %>
+    <%= for id when id==node_id <- keys do %>
+        <% lines = Map.get(@nodes, node_id, []) %>
+        <.logs lines={lines}/>
+    <% end %>
 
 <% end %>

@@ -19,18 +19,15 @@ defmodule PenguinNodes.Flows.Test do
   defp power_func(%Mqtt.Message{payload: "ON"}), do: true
   defp power_func(%Mqtt.Message{}), do: :unknown
 
-  @spec power_status_to_message(Simple.Changed.Message.t()) :: String.t()
-  defp power_status_to_message(%Simple.Changed.Message{new: true}),
+  @spec power_status_to_message(:start | :timer | :end) :: String.t()
+  defp power_status_to_message(:start),
     do: "The fan has been turned on"
 
-  defp power_status_to_message(%Simple.Changed.Message{new: false}),
+  defp power_status_to_message(:end),
     do: "The fan has been turned off"
 
-  defp power_status_to_message(%Simple.Changed.Message{new: :offline}),
-    do: "The fan has been turned off at the power point"
-
-  defp power_status_to_message(%Simple.Changed.Message{new: :unknown}),
-    do: "The fan state is unknown"
+  defp power_status_to_message(:timer),
+    do: "The fan state is on"
 
   @spec generate_flow(id :: Id.t()) :: Nodes.t()
   def generate_flow(id) do
@@ -39,6 +36,8 @@ defmodule PenguinNodes.Flows.Test do
     call_value(nil, Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
     |> call_value(Simple.Map, %{func: &power_func/1}, id(:power_to_boolean))
     |> call_value(Simple.Changed, %{}, id(:changed))
+    |> changed_to(id(:changed_to))
+    |> call_value(Simple.Timer, %{interval: 1000}, id(:timer))
     |> call_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
     |> call_none(Simple.Debug, %{}, id(:message))
     |> terminate()

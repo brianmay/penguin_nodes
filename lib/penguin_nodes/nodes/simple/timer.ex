@@ -31,8 +31,8 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
             end_data: any(),
             interval: integer()
           }
-    @enforce_keys [:start_data, :data, :end_data, :interval]
-    defstruct @enforce_keys
+    @enforce_keys [:interval]
+    defstruct @enforce_keys ++ [start_data: :start, data: :timer, end_data: :end]
   end
 
   @impl true

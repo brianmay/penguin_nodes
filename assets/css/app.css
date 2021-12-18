@@ -35,10 +35,12 @@
     left: -20px;
     background-color: black;
     color: white;
+    padding: 5px;
     border-radius: 5px;
     opacity: 0;
     display: none;
     transition: opacity 0.5s, display 0.5s;
+    z-index: 1;
 }
 
 .hover .trigger:hover+.tooltip {
@@ -57,44 +59,67 @@
     text-overflow: ellipsis;
 }
 
-.alert-primary {
-    color: #004085;
-    background-color: #cce5ff;
-    border-color: #b8daff;
-}
-
-.alert-secondary {
-    color: #383d41;
-    background-color: #e2e3e5;
-    border-color: #d6d8db;
-}
-
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-
-.alert-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeeba;
-}
-
-.alert-info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
-}
-
-.alert-light {
+.alert-debug, .alert-debug td {
     color: #818182;
     background-color: #fefefe;
     border-color: #fdfdfe;
 }
 
-.alert-dark {
-    color: #1b1e21;
-    background-color: #d6d8d9;
-    border-color: #c6c8ca;
+.alert-info, .alert-info td {
+    color: #383d41;
+    background-color: #e2e3e5;
+    border-color: #ffffff;
+}
+
+.alert-notice, .alert-notice td {
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #ffffff;
+}
+
+.alert-warning, .alert-warning td {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffffff;
+}
+
+.alert-error, .alert-error td {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    .hover .tooltip {
+        color: #000000;
+        background-color: #ffffff;
+    }
+
+    .alert-debug, .alert-debug td {
+        color: #eeeeee;
+        background-color: #000000;
+        border-color: #ffffff;
+    }
+    .alert-info, .alert-info td {
+        color: #e2e3e5;
+        background-color: #383d41;
+        border-color: #000000;
+    }
+
+    .alert-notice, .alert-notice td {
+        color: #004085;
+        background-color: #cce5ff;
+        border-color: #000000;
+    }
+
+    .alert-warning, .alert-warning td {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #000000;
+    }
+    .alert-error, .alert-error td {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #000000;
+    }
 }

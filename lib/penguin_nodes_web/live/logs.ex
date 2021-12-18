@@ -36,11 +36,11 @@ defmodule PenguinNodesWeb.Live.Logs do
   end
 
   @spec get_class(log :: map()) :: String.t() | nil
-  defp get_class(%{level: :debug}), do: "border-b alert-light"
-  defp get_class(%{level: :info}), do: "border-b alert-secondary"
-  defp get_class(%{level: :notice}), do: "border-b alert-primary"
+  defp get_class(%{level: :debug}), do: "border-b alert-debug"
+  defp get_class(%{level: :info}), do: "border-b alert-info"
+  defp get_class(%{level: :notice}), do: "border-b alert-notice"
   defp get_class(%{level: :warning}), do: "border-b alert-warning"
-  defp get_class(%{level: :error}), do: "border-b alert-danger"
+  defp get_class(%{level: :error}), do: "border-b alert-error"
   defp get_class(_), do: "border-b"
 
   @spec id_to_string(id :: Id.t()) :: String.t()
@@ -81,5 +81,45 @@ defmodule PenguinNodesWeb.Live.Logs do
 
     socket = assign(socket, :nodes, nodes)
     {:noreply, socket}
+  end
+
+  def logs(assigns) do
+    lines = Map.fetch!(assigns, :lines)
+
+    ~H"""
+        <table class="w-full border-b border-gray-200 dark:border-black shadow-lg table-fixed">
+            <thead class="text-white bg-black dark:bg-gray-500 dark:text-black">
+                <th class="w-40">Time</th>
+                <th class="hidden w-40 border-l border-white dark:border-black lg:table-cell">Level</th>
+                <th class="hidden w-40 border-l border-white dark:border-black lg:table-cell">Hostname</th>
+                <th class="border-l border-white dark:border-black w-50">Message</th>
+                <th class="hidden border-l border-white dark:border-black w-50 md:table-cell">Values</th>
+                <th class="hidden border-l border-white dark:border-black w-50 md:table-cell">State</th>
+            </thead>
+
+            <tbody>
+                <%= for line <- lines do %>
+                    <tr class={get_class(line)}>
+                        <td class=""><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
+                        <td class="hidden border-l lg:table-cell"><%= inspect line.level %></td>
+                        <td class="hidden border-l lg:table-cell"><%= line.hostname %></td>
+                        <td class="border-l"><%= line.message %></td>
+                        <td class="hidden border-l md:table-cell">
+                            <div class="hover">
+                                <div class="truncate trigger"><%= inspect(line.values) |> String.slice(0..30) %></div>
+                                <div class="tooltip"><pre><%= inspect(line.values, pretty: true) %></pre></div>
+                            </div>
+                        </td>
+                        <td class="hidden border-l md:table-cell">
+                            <div class="hover">
+                                <div class="truncate trigger"><%= inspect(line.state) |> String.slice(0..30) %></div>
+                                <div class="tooltip"><pre><%= inspect(line.state, pretty: true) %></pre></div>
+                            </div>
+                        </td>
+                    </tr>
+                <% end %>
+            </tbody>
+        </table>
+    """
   end
 end
