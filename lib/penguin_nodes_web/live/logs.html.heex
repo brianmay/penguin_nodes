@@ -1,8 +1,8 @@
-<h1>Logs</h1>
-
 <% nodes = Config.get_nodes(Config) %>
 
 <%= if @id == nil do %>
+    <h1>Logs</h1>
+
     <% keys = nodes.map |> Map.keys() |> Enum.sort() %>
     <%= for node_id <- keys do %>
         <% lines = Map.get(@nodes, node_id, []) %>
@@ -11,7 +11,11 @@
         <.logs lines={lines}/>
     <% end %>
 <% else %>
+    <%= live_patch "View all", to: get_list_url(@socket), class: "btn btn-blue" %>
+
     <% node_id = @id %>
+    <h1><%= inspect(node_id) %></h1>
+
     <% %Node{} = node = Map.get(nodes.map, node_id, %{}) %>
     <% _lines = Map.get(@nodes, node_id, []) %>
     <% state =
@@ -21,21 +25,18 @@
           end
     %>
     <% meta = node.module.get_meta() %>
-    <%= live_patch "View all", to: get_list_url(@socket), class: "btn btn-blue" %>
-
-    <h2><%= inspect(node_id) %></h2>
     <p>module: <%= inspect node.module %></p>
 
-    <h3>Meta Info</h3>
-    <pre class="overflow-scroll"><%= inspect(meta, pretty: true) %></pre>
+    <h2>Meta Info</h2>
+    <pre class="overflow-scroll pl-5"><%= inspect(meta, pretty: true) %></pre>
 
-    <h3>Node Info</h3>
-    <pre class="overflow-scroll"><%= inspect(node, pretty: true) %></pre>
+    <h2>Node Info</h2>
+    <pre class="overflow-scroll pl-5"><%= inspect(node, pretty: true) %></pre>
 
-    <h3>Node State</h3>
-    <pre class="overflow-scroll"><%= inspect(state, pretty: true) %></pre>
+    <h2>Node State</h2>
+    <pre class="overflow-scroll pl-5"><%= inspect(state, pretty: true) %></pre>
 
-    <h3>Inputs</h3>
+    <h2>Inputs</h2>
     <%= for {key, output_list} <- node.inputs do%>
         <ul>
             <li>
@@ -48,7 +49,7 @@
         </ul>
     <% end %>
 
-    <h3>Outputs</h3>
+    <h2>Outputs</h2>
     <%= for {key, forward_list} <- node.outputs do%>
         <ul>
             <li>

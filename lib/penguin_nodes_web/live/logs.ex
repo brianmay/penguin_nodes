@@ -88,7 +88,7 @@ defmodule PenguinNodesWeb.Live.Logs do
 
     ~H"""
         <table class="w-full border-b border-gray-200 dark:border-black shadow-lg table-fixed">
-            <thead class="text-white bg-black dark:bg-gray-500 dark:text-black">
+            <thead class="text-white bg-black dark:bg-gray-300 dark:text-black">
                 <th class="w-40">Time</th>
                 <th class="hidden w-40 border-l border-white dark:border-black lg:table-cell">Level</th>
                 <th class="hidden w-40 border-l border-white dark:border-black lg:table-cell">Hostname</th>

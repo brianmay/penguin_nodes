@@ -10,15 +10,6 @@ defmodule PenguinNodes.Flows.Test do
   alias PenguinNodes.Nodes.Nodes
   alias PenguinNodes.Nodes.Simple
 
-  @type power_status :: boolean() | :offline | :unknown
-
-  @spec power_func(Mqtt.Message.t()) :: power_status()
-  defp power_func(%Mqtt.Message{payload: "OFF"}), do: false
-  defp power_func(%Mqtt.Message{payload: "HARD_OFF"}), do: :offline
-  defp power_func(%Mqtt.Message{payload: "ERROR"}), do: :unknown
-  defp power_func(%Mqtt.Message{payload: "ON"}), do: true
-  defp power_func(%Mqtt.Message{}), do: :unknown
-
   @spec power_status_to_message(:start | :timer | :end) :: String.t()
   defp power_status_to_message(:start),
     do: "The fan has been turned on"
@@ -34,10 +25,10 @@ defmodule PenguinNodes.Flows.Test do
     nodes = Nodes.new()
 
     call_value(nil, Mqtt.In, %{topic: ["state", "Brian", "Fan", "power"]}, id(:mqtt))
-    |> call_value(Simple.Map, %{func: &power_func/1}, id(:power_to_boolean))
+    |> power_to_boolean(id(:power_to_boolean))
     |> call_value(Simple.Changed, %{}, id(:changed))
     |> changed_to(id(:changed_to))
-    |> call_value(Simple.Timer, %{interval: 1000}, id(:timer))
+    |> call_value(Simple.Timer, %{interval: 10_000}, id(:timer))
     |> call_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
     |> call_none(Simple.Debug, %{}, id(:message))
     |> terminate()

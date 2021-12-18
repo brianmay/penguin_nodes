@@ -6,10 +6,10 @@
 
 @layer base {
     h1 {
-        @apply text-2xl;
+        @apply pb-4 text-2xl text-green-500;
       }
       h2 {
-        @apply pt-10 text-xl;
+        @apply pb-4 pt-10 text-green-500 text-xl;
       }
 }
 
@@ -28,7 +28,6 @@
 .hover {
     position: relative;
 }
-
 
 .hover .tooltip {
     /* hide and position tooltip */
