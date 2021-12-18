@@ -84,10 +84,8 @@ defmodule PenguinNodesWeb.Live.Logs do
   end
 
   def logs(assigns) do
-    lines = Map.fetch!(assigns, :lines)
-
     ~H"""
-        <table class="w-full border-b border-gray-200 dark:border-black shadow-lg table-fixed">
+        <table class="w-full border-b border-gray-200 shadow-lg table-fixed dark:border-black">
             <thead class="text-white bg-black dark:bg-gray-300 dark:text-black">
                 <th class="w-40">Time</th>
                 <th class="hidden w-40 border-l border-white dark:border-black lg:table-cell">Level</th>
@@ -98,7 +96,7 @@ defmodule PenguinNodesWeb.Live.Logs do
             </thead>
 
             <tbody>
-                <%= for line <- lines do %>
+                <%= for line <- @lines do %>
                     <tr class={get_class(line)}>
                         <td class=""><%= line.datetime |> DateTime.shift_zone!("Australia/Melbourne") |> Calendar.strftime("%Y-%m-%d %H:%M:%S") %></td>
                         <td class="hidden border-l lg:table-cell"><%= inspect line.level %></td>
