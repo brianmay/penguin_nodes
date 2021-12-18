@@ -27,13 +27,13 @@
     <p>module: <%= inspect node.module %></p>
 
     <h2>Meta Info</h2>
-    <pre class="overflow-scroll pl-5"><%= inspect(meta, pretty: true) %></pre>
+    <pre class="pl-5 overflow-scroll"><%= inspect(meta, pretty: true) %></pre>
 
     <h2>Node Info</h2>
-    <pre class="overflow-scroll pl-5"><%= inspect(node, pretty: true) %></pre>
+    <pre class="pl-5 overflow-scroll"><%= inspect(node, pretty: true) %></pre>
 
     <h2>Node State</h2>
-    <pre class="overflow-scroll pl-5"><%= inspect(state, pretty: true) %></pre>
+    <pre class="pl-5 overflow-scroll"><%= inspect(state, pretty: true) %></pre>
 
     <h2>Inputs</h2>
     <%= for {key, output_list} <- node.inputs do%>
