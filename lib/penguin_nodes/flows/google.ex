@@ -88,6 +88,44 @@ defmodule PenguinNodes.Flows.Google do
     }
   end
 
+  @spec timer_to_auto(atom(), String.t(), String.t()) :: Mqtt.Message.t()
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def timer_to_auto(_data, location, device) do
+    timezone = "Australia/Melbourne"
+    now = DateTime.now!(timezone)
+
+    color =
+      case now.hour do
+        h when h > 22 or h < 5 ->
+          %{hue: 0, saturation: 0, brightness: 5, kelvin: 1000}
+
+        h when h > 21 or h < 6 ->
+          %{hue: 0, saturation: 0, brightness: 15, kelvin: 1500}
+
+        h when h > 20 or h < 7 ->
+          %{hue: 0, saturation: 0, brightness: 25, kelvin: 2000}
+
+        h when h > 19 or h < 8 ->
+          %{hue: 0, saturation: 0, brightness: 50, kelvin: 2500}
+
+        h when h > 18 or h < 9 ->
+          %{hue: 0, saturation: 0, brightness: 100, kelvin: 3000}
+
+        _ ->
+          %{hue: 0, saturation: 0, brightness: 100, kelvin: 3500}
+      end
+
+    payload = %{
+      "power" => "ON",
+      "color" => color
+    }
+
+    %Mqtt.Message{
+      payload: payload,
+      topic: ["command", location, device, "scene", "auto"]
+    }
+  end
+
   @spec device_google_to_robotica(Mqtt.Message.t(), String.t(), String.t()) :: Mqtt.Message.t()
   def device_google_to_robotica(message, location, device) do
     input = message.payload
@@ -153,6 +191,12 @@ defmodule PenguinNodes.Flows.Google do
       id(:robotica_to_google)
     )
     |> mqtt_out(id(:google_out))
+    |> terminate()
+
+    call_value(Simple.Timer, %{initial: :start, interval: 60_000}, id(:auto_timer))
+    |> call_value(Simple.Map, %{func: &timer_to_auto(&1, location, device)}, id(:auto_map))
+    |> call_value(Simple.Debug, %{message: "Updating auto"}, id(:auto_debug))
+    |> mqtt_out(true, id(:auto_out))
     |> terminate()
 
     nodes

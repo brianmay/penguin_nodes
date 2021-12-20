@@ -28,7 +28,7 @@ defmodule PenguinNodes.Flows.Test do
     |> power_to_boolean(id(:power_to_boolean))
     |> call_value(Simple.Changed, %{}, id(:changed))
     |> changed_to(id(:changed_to))
-    |> call_value(Simple.Timer, %{interval: 10_000}, id(:timer))
+    |> call_value(Simple.Timer, %{initial: :stop, interval: 10_000}, id(:timer))
     |> call_value(Simple.Map, %{func: &power_status_to_message/1}, id(:power_to_string))
     |> call_none(Simple.Debug, %{}, id(:message))
     |> terminate()

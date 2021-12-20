@@ -43,7 +43,7 @@ defmodule PenguinNodes.Nodes.Flow do
           id :: Id.t()
         ) ::
           Nodes.t()
-  def call_none(value, module, extra \\ %{}, opts, id) do
+  def call_none(value \\ nil, module, extra \\ %{}, opts, id) do
     inputs = params_to_map(value, extra)
     module_options = Module.concat(module, Options)
     options = struct!(module_options, opts)
@@ -58,7 +58,7 @@ defmodule PenguinNodes.Nodes.Flow do
           opts :: map(),
           id :: Id.t()
         ) :: Wire.t()
-  def call_value(value, module, extra \\ %{}, opts, id) do
+  def call_value(value \\ nil, module, extra \\ %{}, opts, id) do
     inputs = params_to_map(value, extra)
     module_options = Module.concat(module, Options)
     options = struct!(module_options, opts)
@@ -73,7 +73,7 @@ defmodule PenguinNodes.Nodes.Flow do
           opts :: map(),
           id :: Id.t()
         ) :: %{atom() => Wire.t()}
-  def call_map(value, module, extra \\ %{}, opts, id) do
+  def call_map(value \\ nil, module, extra \\ %{}, opts, id) do
     inputs = params_to_map(value, extra)
     module_options = Module.concat(module, Options)
     options = struct!(module_options, opts)

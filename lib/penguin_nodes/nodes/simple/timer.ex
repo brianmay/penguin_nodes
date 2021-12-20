@@ -26,19 +26,27 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
     Options for the timer node
     """
     @type t :: %__MODULE__{
+            initial: :start | :stop,
             start_data: any(),
             data: any(),
             end_data: any(),
             interval: integer()
           }
-    @enforce_keys [:interval]
+    @enforce_keys [:interval, :initial]
     defstruct @enforce_keys ++ [start_data: :start, data: :timer, end_data: :end]
   end
 
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = node.opts
-    state = assign(state, timer: nil)
+
+    timer =
+      case node.opts.initial do
+        :start -> :timer.send_interval(state.opts.interval, :timer)
+        :stop -> nil
+      end
+
+    state = assign(state, timer: timer)
     {:ok, state}
   end
 
