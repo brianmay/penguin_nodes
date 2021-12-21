@@ -88,32 +88,49 @@ defmodule PenguinNodes.Flows.Google do
     }
   end
 
-  @spec timer_to_auto(atom(), String.t(), String.t()) :: Mqtt.Message.t()
+  @spec get_auto_brightness(now :: DateTime.t(), location :: String.t(), device :: String.t()) ::
+          integer()
   # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_auto_brightness(now, "Brian", _) do
+    case now.hour do
+      h when h >= 22 or h < 5 -> 5
+      h when h >= 21 or h < 6 -> 15
+      h when h >= 20 or h < 7 -> 25
+      h when h >= 19 or h < 8 -> 50
+      h when h >= 18 or h < 9 -> 100
+      _ -> 100
+    end
+  end
+
+  def get_auto_brightness(_now, _, _) do
+    100
+  end
+
+  @spec get_auto_kelvin(now :: DateTime.t(), location :: String.t(), device :: String.t()) ::
+          integer()
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def get_auto_kelvin(now, _, _) do
+    case now.hour do
+      h when h >= 22 or h < 5 -> 1000
+      h when h >= 21 or h < 6 -> 1500
+      h when h >= 20 or h < 7 -> 2000
+      h when h >= 19 or h < 8 -> 2500
+      h when h >= 18 or h < 9 -> 3000
+      _ -> 3500
+    end
+  end
+
+  @spec timer_to_auto(atom(), String.t(), String.t()) :: Mqtt.Message.t()
   def timer_to_auto(_data, location, device) do
     timezone = "Australia/Melbourne"
     now = DateTime.now!(timezone)
 
-    color =
-      case now.hour do
-        h when h >= 22 or h < 5 ->
-          %{hue: 0, saturation: 0, brightness: 5, kelvin: 1000}
-
-        h when h >= 21 or h < 6 ->
-          %{hue: 0, saturation: 0, brightness: 15, kelvin: 1500}
-
-        h when h >= 20 or h < 7 ->
-          %{hue: 0, saturation: 0, brightness: 25, kelvin: 2000}
-
-        h when h >= 19 or h < 8 ->
-          %{hue: 0, saturation: 0, brightness: 50, kelvin: 2500}
-
-        h when h >= 18 or h < 9 ->
-          %{hue: 0, saturation: 0, brightness: 100, kelvin: 3000}
-
-        _ ->
-          %{hue: 0, saturation: 0, brightness: 100, kelvin: 3500}
-      end
+    color = %{
+      "hue" => 0,
+      "saturation" => 0,
+      "brightness" => get_auto_brightness(now, location, device),
+      "kelvin" => get_auto_kelvin(now, location, device)
+    }
 
     payload = %{
       "power" => "ON",
