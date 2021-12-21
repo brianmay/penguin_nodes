@@ -96,19 +96,19 @@ defmodule PenguinNodes.Flows.Google do
 
     color =
       case now.hour do
-        h when h > 22 or h < 5 ->
+        h when h >= 22 or h < 5 ->
           %{hue: 0, saturation: 0, brightness: 5, kelvin: 1000}
 
-        h when h > 21 or h < 6 ->
+        h when h >= 21 or h < 6 ->
           %{hue: 0, saturation: 0, brightness: 15, kelvin: 1500}
 
-        h when h > 20 or h < 7 ->
+        h when h >= 20 or h < 7 ->
           %{hue: 0, saturation: 0, brightness: 25, kelvin: 2000}
 
-        h when h > 19 or h < 8 ->
+        h when h >= 19 or h < 8 ->
           %{hue: 0, saturation: 0, brightness: 50, kelvin: 2500}
 
-        h when h > 18 or h < 9 ->
+        h when h >= 18 or h < 9 ->
           %{hue: 0, saturation: 0, brightness: 100, kelvin: 3000}
 
         _ ->
