@@ -42,8 +42,12 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
 
     timer =
       case node.opts.initial do
-        :start -> :timer.send_interval(state.opts.interval, :timer)
-        :stop -> nil
+        :start ->
+          {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
+          timer
+
+        :stop ->
+          nil
       end
 
     state = assign(state, timer: timer)
@@ -54,7 +58,7 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
   def restart(%NodeModule.State{} = state, %Node{}) do
     state =
       if state.assigns.timer do
-        timer = :timer.send_interval(state.opts.interval, :timer)
+        {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
         assign(state, timer: timer)
       else
         state
