@@ -26,6 +26,7 @@ defmodule PenguinNodes.Application do
 
     children = [
       {Cluster.Supervisor, [topologies, [name: PenguinNodes.ClusterSupervisor]]},
+      {Mnesiac.Supervisor, [[], [name: PenguinNodes.MnesiacSupervisor]]},
       # Start the Ecto repository
       PenguinNodes.Repo,
       PenguinNodesWeb.Telemetry,
@@ -55,8 +56,6 @@ defmodule PenguinNodes.Application do
       {Finch, name: PenguinNodes.Finch},
       {Config, name: Config}
     ]
-
-    Memento.Table.create(PenguinNodes.NodeState)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

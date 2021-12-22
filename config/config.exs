@@ -86,8 +86,10 @@ config :plugoid,
 config :singleton,
   dynamic_supervisor: [max_restarts: 1000]
 
-config :mnesia,
-  dir: '/tmp/mnesia/#{Mix.env()}/#{node()}'
+config :mnesiac,
+  stores: [PenguinNodes.NodeState],
+  schema_type: :ram_copies,
+  table_load_timeout: 600_000
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

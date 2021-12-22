@@ -22,7 +22,7 @@ defmodule PenguinNodes.MixProject do
   def application do
     [
       mod: {PenguinNodes.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon, :crypto]
+      extra_applications: [:logger, :runtime_tools, :os_mon, :crypto, {:mnesia, :optional}]
     ]
   end
 
@@ -58,7 +58,7 @@ defmodule PenguinNodes.MixProject do
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
       {:plugoid, git: "https://github.com/tanguilp/plugoid.git", branch: "conn_callback"},
       {:replug, "~> 0.1.0"},
-      {:memento, "~> 0.3.2"},
+      {:mnesiac, "~> 0.3"},
       {:singleton,
        git: "https://github.com/klacointe/singleton.git", branch: "FIX-more-than-three-singletons"}
     ]

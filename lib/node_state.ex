@@ -2,15 +2,39 @@ defmodule PenguinNodes.NodeState do
   @moduledoc """
   Save node state
   """
+  use Mnesiac.Store
+  import Record, only: [defrecord: 3]
+
   alias PenguinNodes.Nodes.Id
 
-  use Memento.Table, attributes: [:node_id, :state]
+  defrecord(
+    :node_state,
+    :node_state,
+    node_id: nil,
+    state: nil
+  )
+
+  @type node_state ::
+          record(
+            :node_state,
+            node_id: Id.t(),
+            state: any()
+          )
+
+  @impl true
+  def store_options,
+    do: [
+      record_name: :node_state,
+      attributes: node_state() |> node_state() |> Keyword.keys(),
+      index: [:node_id],
+      ram_copies: [node()]
+    ]
 
   @spec put(Id.t(), any()) :: :ok
   def put(node_id, state) do
-    Memento.transaction!(fn ->
-      %__MODULE__{node_id: node_id, state: state}
-      |> Memento.Query.write()
+    :mnesia.transaction(fn ->
+      {:node_state, node_id: node_id, state: state}
+      |> :mnesia.write()
     end)
 
     :ok
@@ -18,11 +42,11 @@ defmodule PenguinNodes.NodeState do
 
   @spec get(Id.t()) :: {:ok, any()} | {:error, atom()}
   def get(node_id) do
-    Memento.transaction!(fn ->
-      Memento.Query.read(__MODULE__, node_id)
+    :mnesia.transaction(fn ->
+      :mnesia.read({:node_state, node_id})
     end)
     |> case do
-      %__MODULE__{state: state} -> {:ok, state}
+      {:atomic, [{:node_state, _, state}]} -> {:ok, state}
       _ -> {:error, :not_found}
     end
   end
