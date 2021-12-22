@@ -13,6 +13,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
   alias PenguinNodes.Nodes.Output
   alias PenguinNodes.Nodes.Types
   alias PenguinNodes.Nodes.Wire
+  alias PenguinNodes.NodeState
 
   defmodule State do
     @moduledoc """
@@ -313,11 +314,11 @@ defmodule PenguinNodes.Nodes.NodeModule do
   def handle_continue({:_init, %Node{} = node}, nil) do
     module = node.module
 
-    rc = Horde.Registry.meta(PenguinNodes.Registry, node.node_id)
+    rc = NodeState.get(node.node_id)
 
     {init, assigns} =
       cond do
-        rc == :error ->
+        match?({:error, _}, rc) ->
           {&node.module.init/2, %{}}
 
         function_exported?(node.module, :restart, 2) ->
@@ -429,7 +430,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
   end
 
   @impl true
-  def terminate(reason, %State{} = state) do
+  def terminate(reason, state) do
     error(state, "Node terminating", %{reason: reason})
   end
 
@@ -444,6 +445,6 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @spec save_state(State.t()) :: :ok
   def save_state(%State{} = state) do
-    :ok = Horde.Registry.put_meta(PenguinNodes.Registry, state.node_id, state.assigns)
+    :ok = NodeState.put(state.node_id, state.assigns)
   end
 end

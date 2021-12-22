@@ -53,9 +53,10 @@ defmodule PenguinNodes.Application do
        subscriptions: []},
       {MqttPotion.Multiplexer, [mqtt_potion: PenguinNodes.Mqtt]},
       {Finch, name: PenguinNodes.Finch},
-      {Horde.Registry, [name: PenguinNodes.Registry, keys: :unique, members: :auto]},
       {Config, name: Config}
     ]
+
+    Memento.Table.create(PenguinNodes.NodeState)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

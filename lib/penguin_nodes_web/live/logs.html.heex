@@ -18,8 +18,8 @@
 
     <% %Node{} = node = Map.get(nodes.map, node_id, %{}) %>
     <% state =
-          case Horde.Registry.meta(PenguinNodes.Registry, node.node_id) do
-            :error -> nil
+          case PenguinNodes.NodeState.get(node.node_id) do
+            {:error, _} -> nil
             {:ok, state} -> state
           end
     %>
