@@ -21,6 +21,22 @@ defmodule PenguinNodes.Nodes.Simple.Reduce do
     }
   end
 
+  @spec save_state(state :: NodeModule.State.t()) :: NodeModule.State.t()
+  def save_state(%NodeModule.State{} = state) do
+    save_state_map(state, state.assigns)
+  end
+
+  @spec load_state(state :: NodeModule.State.t()) :: map()
+  def load_state(%NodeModule.State{} = state) do
+    case load_state_map(state) do
+      {:ok, data} ->
+        data
+
+      {:error, _} ->
+        %{}
+    end
+  end
+
   defmodule Options do
     @moduledoc """
     Options for the timer node
@@ -37,7 +53,8 @@ defmodule PenguinNodes.Nodes.Simple.Reduce do
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = node.opts
-    state = assign(state, :acc, %{})
+    assigns = load_state(state)
+    state = %NodeModule.State{state | assigns: assigns}
     {:ok, state}
   end
 
@@ -45,10 +62,13 @@ defmodule PenguinNodes.Nodes.Simple.Reduce do
   @spec handle_input(:value, any, PenguinNodes.Nodes.NodeModule.State.t()) ::
           {:noreply, PenguinNodes.Nodes.NodeModule.State.t()}
   def handle_input(:value, data, %NodeModule.State{} = state) do
-    acc = state.assigns.acc
-    {data, acc} = state.opts.func.(data, acc)
-    state = assign(state, :acc, acc)
-    :ok = NodeModule.output(state, :value, data)
+    {data, assigns} = state.opts.func.(data, state.assigns)
+
+    state =
+      %NodeModule.State{state | assigns: assigns}
+      |> save_state()
+
+    :ok = output(state, :value, data)
     {:noreply, state}
   end
 end

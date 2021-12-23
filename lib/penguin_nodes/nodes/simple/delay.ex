@@ -32,30 +32,52 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
     defstruct @enforce_keys
   end
 
-  @impl true
-  def init(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = node.opts
-    state = assign(state, timer: nil, sent: nil)
-    {:ok, state}
+  @spec save_state(state :: NodeModule.State.t()) :: NodeModule.State.t()
+  def save_state(%NodeModule.State{} = state) do
+    save_state_map(state, %{
+      "timer_set" => state.assigns.timer != nil,
+      "sent" => state.assigns.sent
+    })
+  end
+
+  @spec load_state(state :: NodeModule.State.t()) :: map()
+  def load_state(%NodeModule.State{} = state) do
+    {timer_set, sent} =
+      case load_state_map(state) do
+        {:ok, data} ->
+          {Map.fetch!(data, "timer_set"), Map.fetch!(data, "sent")}
+
+        {:error, _} ->
+          {false, nil}
+      end
+
+    timer =
+      if timer_set do
+        Process.send_after(self(), :timer, state.opts.interval)
+      else
+        nil
+      end
+
+    %{timer: timer, sent: sent}
   end
 
   @impl true
-  def restart(%NodeModule.State{} = state, %Node{}) do
-    state =
-      if state.assigns.timer do
-        timer = Process.send_after(self(), :timer, state.opts.interval)
-        assign(state, timer: timer)
-      else
-        state
-      end
-
+  def init(%NodeModule.State{} = state, %Node{} = node) do
+    %Options{} = node.opts
+    assigns = load_state(state)
+    state = %NodeModule.State{state | assigns: assigns}
     {:ok, state}
   end
 
   @impl true
   def handle_info(:timer, %NodeModule.State{} = state) do
     :ok = NodeModule.output(state, :value, true)
-    state = assign(state, timer: nil, sent: true)
+
+    state =
+      state
+      |> assign(timer: nil, sent: true)
+      |> save_state()
+
     {:noreply, state}
   end
 
@@ -71,7 +93,12 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
       state.assigns.timer == nil and data == true and sent != true ->
         # timer not set and we got true and we didn't send true
         timer = Process.send_after(self(), :timer, state.opts.interval)
-        state = assign(state, timer: timer)
+
+        state =
+          state
+          |> assign(timer: timer)
+          |> save_state()
+
         {:noreply, state}
 
       state.assigns.timer != nil and data == false ->
@@ -80,7 +107,12 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
         # because the timer activation will disable the timer,
         # and then we can't reset timer until false received.
         Process.cancel_timer(state.assigns.timer)
-        state = assign(state, timer: nil)
+
+        state =
+          state
+          |> assign(timer: nil)
+          |> save_state()
+
         {:noreply, state}
 
       data == true ->
@@ -90,7 +122,12 @@ defmodule PenguinNodes.Nodes.Simple.Delay do
       data == false and sent != false and sent != nil ->
         # timer not set and received false and didn't send false
         :ok = NodeModule.output(state, :value, false)
-        state = assign(state, sent: false)
+
+        state =
+          state
+          |> assign(sent: false)
+          |> save_state()
+
         {:noreply, state}
 
       data == false ->

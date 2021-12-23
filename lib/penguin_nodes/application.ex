@@ -26,7 +26,6 @@ defmodule PenguinNodes.Application do
 
     children = [
       {Cluster.Supervisor, [topologies, [name: PenguinNodes.ClusterSupervisor]]},
-      {Mnesiac.Supervisor, [[], [name: PenguinNodes.MnesiacSupervisor]]},
       # Start the Ecto repository
       PenguinNodes.Repo,
       PenguinNodesWeb.Telemetry,

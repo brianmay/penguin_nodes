@@ -34,14 +34,41 @@ defmodule PenguinNodes.Nodes.Tesla.RequiresPlugin do
     defstruct @enforce_keys
   end
 
+  @spec save_state(state :: NodeModule.State.t()) :: NodeModule.State.t()
+  def save_state(%NodeModule.State{} = state) do
+    save_state_map(state, state.assigns)
+  end
+
+  @spec load_state(state :: NodeModule.State.t()) :: map()
+  def load_state(%NodeModule.State{} = state) do
+    case load_state_map(state) do
+      {:ok, data} ->
+        %{
+          battery_level: Map.fetch!(data, "battery_level"),
+          plugged_in: Map.fetch!(data, "plugged_in"),
+          geofence: Map.fetch!(data, "geofence"),
+          reminder: Map.fetch!(data, "reminder")
+        }
+
+      {:error, _} ->
+        %{
+          battery_level: nil,
+          plugged_in: nil,
+          geofence: nil,
+          reminder: nil
+        }
+    end
+  end
+
   @impl true
   def init(%NodeModule.State{} = state, %Node{} = node) do
     %Options{} = node.opts
-    state = assign(state, battery_level: nil, plugged_in: nil, geofence: nil, reminder: nil)
+    assigns = load_state(state)
+    state = %NodeModule.State{state | assigns: assigns}
     {:ok, state}
   end
 
-  @spec evaluate(state :: NodeModule.State.t()) :: :ok
+  @spec evaluate(state :: NodeModule.State.t()) :: NodeModule.State.t()
   defp evaluate(%NodeModule.State{} = state) do
     battery_level = state.assigns.battery_level
     plugged_in = state.assigns.plugged_in
@@ -56,14 +83,20 @@ defmodule PenguinNodes.Nodes.Tesla.RequiresPlugin do
       {level, false, "Home", true} when level < 75 -> :ok = NodeModule.output(state, :value, true)
       {_, _, _, _} -> :ok = NodeModule.output(state, :value, false)
     end
+
+    state
   end
 
   @impl true
   @spec handle_input(:battery_level, any(), NodeModule.State.t()) ::
           {:noreply, NodeModule.State.t()}
   def handle_input(:battery_level, data, %NodeModule.State{} = state) do
-    state = assign(state, :battery_level, data)
-    evaluate(state)
+    state =
+      state
+      |> assign(:battery_level, data)
+      |> evaluate()
+      |> save_state()
+
     {:noreply, state}
   end
 
@@ -71,8 +104,12 @@ defmodule PenguinNodes.Nodes.Tesla.RequiresPlugin do
   @spec handle_input(:plugged_in, any(), NodeModule.State.t()) ::
           {:noreply, NodeModule.State.t()}
   def handle_input(:plugged_in, data, %NodeModule.State{} = state) do
-    state = assign(state, :plugged_in, data)
-    evaluate(state)
+    state =
+      state
+      |> assign(:plugged_in, data)
+      |> evaluate()
+      |> save_state()
+
     {:noreply, state}
   end
 
@@ -80,8 +117,12 @@ defmodule PenguinNodes.Nodes.Tesla.RequiresPlugin do
   @spec handle_input(:geofence, any(), NodeModule.State.t()) ::
           {:noreply, NodeModule.State.t()}
   def handle_input(:geofence, data, %NodeModule.State{} = state) do
-    state = assign(state, :geofence, data)
-    evaluate(state)
+    state =
+      state
+      |> assign(:geofence, data)
+      |> evaluate()
+      |> save_state()
+
     {:noreply, state}
   end
 
@@ -89,8 +130,12 @@ defmodule PenguinNodes.Nodes.Tesla.RequiresPlugin do
   @spec handle_input(:reminder, any(), NodeModule.State.t()) ::
           {:noreply, NodeModule.State.t()}
   def handle_input(:reminder, data, %NodeModule.State{} = state) do
-    state = assign(state, :reminder, data)
-    evaluate(state)
+    state =
+      state
+      |> assign(:reminder, data)
+      |> evaluate()
+      |> save_state()
+
     {:noreply, state}
   end
 end

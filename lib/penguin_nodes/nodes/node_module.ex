@@ -80,15 +80,6 @@ defmodule PenguinNodes.Nodes.NodeModule do
               | {:stop, reason}
             when state: State.t(), reason: term()
 
-  @callback restart(state :: State.t(), node :: Node.t()) ::
-              {:ok, state}
-              | {:ok, state, timeout :: non_neg_integer}
-              | {:ok, state, :hibernate}
-              | {:ok, state, opts :: response_opts()}
-              | :ignore
-              | {:stop, reason}
-            when state: State.t(), reason: term()
-
   @callback handle_input(id :: atom(), data :: Node.data(), state :: State.t()) ::
               {:noreply, State.t()}
               | {:noreply, State.t(), timeout}
@@ -96,7 +87,7 @@ defmodule PenguinNodes.Nodes.NodeModule do
               | {:noreply, State.t(), opts :: response_opts()}
 
   @callback get_meta :: Meta.t()
-  @optional_callbacks restart: 2, handle_input: 3
+  @optional_callbacks handle_input: 3
 
   @spec wait_for_pid(node_id :: Id.t(), tries :: integer()) :: :ok | :error
   defp wait_for_pid(node_id, tries \\ 3)
@@ -314,49 +305,30 @@ defmodule PenguinNodes.Nodes.NodeModule do
   def handle_continue({:_init, %Node{} = node}, nil) do
     module = node.module
 
-    rc = NodeState.get(node.node_id)
-
-    {init, assigns} =
-      cond do
-        match?({:error, _}, rc) ->
-          {&node.module.init/2, %{}}
-
-        function_exported?(node.module, :restart, 2) ->
-          {:ok, assigns} = rc
-          init = &node.module.restart/2
-          {init, assigns}
-
-        true ->
-          {:ok, assigns} = rc
-          init = fn %State{} = state, %Node{} -> {:ok, state} end
-          {init, assigns}
-      end
-
     state = %State{
       node_id: node.node_id,
       module: module,
       inputs: node.inputs,
       outputs: node.outputs,
-      assigns: assigns,
+      assigns: %{},
       opts: node.opts
     }
 
     # start up the state
-    rc = init.(state, node)
-    :ok = save_state_from_rc(rc)
+    rc = node.module.init(state, node)
 
     case rc do
       {:ok, %State{} = state} ->
         {:noreply, state}
 
       {:ok, _other} ->
-        raise "Invalid response from #{inspect(init)} State must be a %State{}"
+        raise "Invalid response from init: State must be a %State{}"
 
       {:ok, %State{} = state, opt} ->
         {:noreply, state, opt}
 
       {:ok, _other, _opt} ->
-        raise "Invalid response from #{inspect(init)} State must be a %State{}"
+        raise "Invalid response from init: State must be a %State{}"
 
       :ignore ->
         :ignore
@@ -369,7 +341,6 @@ defmodule PenguinNodes.Nodes.NodeModule do
   @impl true
   def handle_continue(msg, %State{module: module} = state) do
     rc = module.handle_continue(msg, state)
-    :ok = save_state_from_rc(rc)
 
     case rc do
       {:noreply, %State{} = state} -> {:noreply, state}
@@ -381,7 +352,6 @@ defmodule PenguinNodes.Nodes.NodeModule do
   @impl true
   def handle_info(msg, %State{module: module} = state) do
     rc = module.handle_info(msg, state)
-    :ok = save_state_from_rc(rc)
 
     case rc do
       {:noreply, %State{} = state} -> {:noreply, state}
@@ -398,7 +368,6 @@ defmodule PenguinNodes.Nodes.NodeModule do
   @impl true
   def handle_call(msg, from, %State{module: module} = state) do
     rc = module.handle_call(msg, from, state)
-    :ok = save_state_from_rc(rc)
 
     case rc do
       {:noreply, %State{} = state} -> {:noreply, state}
@@ -412,15 +381,12 @@ defmodule PenguinNodes.Nodes.NodeModule do
   @impl true
   def handle_cast({:input, id, data}, %State{module: module} = state) do
     debug(state, "Received data from input", %{input: id, data: data})
-    rc = module.handle_input(id, data, state)
-    :ok = save_state_from_rc(rc)
-    rc
+    module.handle_input(id, data, state)
   end
 
   @impl true
   def handle_cast(msg, %State{module: module} = state) do
     rc = module.handle_cast(msg, state)
-    :ok = save_state_from_rc(rc)
 
     case rc do
       {:noreply, %State{} = state} -> {:noreply, state}
@@ -434,17 +400,14 @@ defmodule PenguinNodes.Nodes.NodeModule do
     error(state, "Node terminating", %{reason: reason})
   end
 
-  @spec save_state_from_rc(rc :: any()) :: :ok
-  def save_state_from_rc({:noreply, %State{} = state}), do: save_state(state)
-  def save_state_from_rc({:noreply, %State{} = state, _}), do: save_state(state)
-  def save_state_from_rc({:reply, _, %State{} = state}), do: save_state(state)
-  def save_state_from_rc({:reply, _, %State{} = state, _}), do: save_state(state)
-  def save_state_from_rc({:ok, %State{} = state}), do: save_state(state)
-  def save_state_from_rc({:ok, %State{} = state, _}), do: save_state(state)
-  def save_state_from_rc(_), do: :ok
+  @spec save_state_map(state :: State.t(), data :: map()) :: State.t()
+  def save_state_map(%State{} = state, data) do
+    :ok = NodeState.put(state.node_id, data)
+    state
+  end
 
-  @spec save_state(State.t()) :: :ok
-  def save_state(%State{} = state) do
-    :ok = NodeState.put(state.node_id, state.assigns)
+  @spec load_state_map(state :: State.t()) :: {:ok, map()} | {:error, atom()}
+  def load_state_map(%State{} = state) do
+    NodeState.get(state.node_id)
   end
 end

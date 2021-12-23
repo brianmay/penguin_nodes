@@ -41,13 +41,6 @@ defmodule PenguinNodes.Nodes.Mqtt.In do
   end
 
   @impl true
-  def restart(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = options = node.opts
-    Multiplexer.subscribe(options.topic, :mqtt, self(), options.format, options.resend)
-    {:ok, state}
-  end
-
-  @impl true
   def handle_cast({:mqtt, topic, :mqtt, payload}, %NodeModule.State{} = state) do
     message = %Message{
       topic: topic,

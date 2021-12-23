@@ -11,7 +11,7 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
   @impl true
   def get_meta do
     %Meta{
-      description: "Generate a message once eveyr timer period",
+      description: "Generate a message once every timer period",
       inputs: %{
         value: %Meta.Input{description: "True to start timer, false to cancel", type: :boolean}
       },
@@ -36,34 +36,38 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
     defstruct @enforce_keys ++ [start_data: :start, data: :timer, end_data: :end]
   end
 
-  @impl true
-  def init(%NodeModule.State{} = state, %Node{} = node) do
-    %Options{} = node.opts
+  @spec save_state(state :: NodeModule.State.t()) :: NodeModule.State.t()
+  def save_state(%NodeModule.State{} = state) do
+    save_state_map(state, %{"timer_set" => state.assigns.timer != nil})
+  end
 
-    timer =
-      case node.opts.initial do
-        :start ->
-          {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
-          timer
+  @spec load_state(state :: NodeModule.State.t()) :: map()
+  def load_state(%NodeModule.State{} = state) do
+    timer_set =
+      case load_state_map(state) do
+        {:ok, data} ->
+          Map.fetch!(data, "timer_set")
 
-        :stop ->
-          nil
+        {:error, _} ->
+          state.opts.initial == :start
       end
 
-    state = assign(state, timer: timer)
-    {:ok, state}
+    timer =
+      if timer_set do
+        {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
+        timer
+      else
+        nil
+      end
+
+    %{timer: timer}
   end
 
   @impl true
-  def restart(%NodeModule.State{} = state, %Node{}) do
-    state =
-      if state.assigns.timer do
-        {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
-        assign(state, timer: timer)
-      else
-        state
-      end
-
+  def init(%NodeModule.State{} = state, %Node{} = node) do
+    %Options{} = node.opts
+    assigns = load_state(state)
+    state = %NodeModule.State{state | assigns: assigns}
     {:ok, state}
   end
 
@@ -83,14 +87,24 @@ defmodule PenguinNodes.Nodes.Simple.Timer do
       state.assigns.timer == nil and data ->
         # timer not set but requested
         {:ok, timer} = :timer.send_interval(state.opts.interval, :timer)
-        state = assign(state, timer: timer)
+
+        state =
+          state
+          |> assign(timer: timer)
+          |> save_state()
+
         :ok = NodeModule.output(state, :value, state.opts.start_data)
         {:noreply, state}
 
       state.assigns.timer != nil and not data ->
         # timer set and cancel requested
         :timer.cancel(state.assigns.timer)
-        state = assign(state, timer: nil)
+
+        state =
+          state
+          |> assign(timer: nil)
+          |> save_state()
+
         :ok = NodeModule.output(state, :value, state.opts.end_data)
         {:noreply, state}
 

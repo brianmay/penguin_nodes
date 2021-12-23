@@ -47,13 +47,13 @@ defmodule PenguinNodesWeb.Live.Logs do
   defp id_to_string(id) do
     id
     |> Tuple.to_list()
-    |> Enum.map_join("!", fn x -> Atom.to_string(x) end)
+    |> Enum.map_join("/", fn x -> Atom.to_string(x) end)
   end
 
   @spec string_to_id(str :: String.t()) :: Id.t()
   defp string_to_id(str) do
     str
-    |> String.split("!")
+    |> String.split("/")
     |> Enum.map(fn x -> String.to_existing_atom(x) end)
     |> List.to_tuple()
   end
