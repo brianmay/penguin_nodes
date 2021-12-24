@@ -298,24 +298,22 @@ defmodule PenguinNodes.Nodes.NodeModule do
 
   @impl true
   def init(%Node{} = node) do
-    {:ok, nil, {:continue, {:_init, node}}}
-  end
-
-  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
-  def handle_continue({:_init, %Node{} = node}, nil) do
-    module = node.module
-
     state = %State{
       node_id: node.node_id,
-      module: module,
+      module: node.module,
       inputs: node.inputs,
       outputs: node.outputs,
       assigns: %{},
       opts: node.opts
     }
 
+    {:ok, state, {:continue, {:_init, node}}}
+  end
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
+  def handle_continue({:_init, %Node{module: module} = node}, %State{} = state) do
     # start up the state
-    rc = node.module.init(state, node)
+    rc = module.init(state, node)
 
     case rc do
       {:ok, %State{} = state} ->
