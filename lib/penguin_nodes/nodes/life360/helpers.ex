@@ -2,6 +2,24 @@ defmodule PenguinNodes.Nodes.Life360.Helpers do
   @moduledoc """
   HTTP wrapper functions for Life360
   """
+  @spec process_response({:ok, Finch.Response.t()} | {:error, Finch.Error.t()}) ::
+          {:error, String.t() | Finch.Error.t()} | {:ok, map()}
+  defp process_response(response) do
+    case response do
+      {:ok, %Finch.Response{status: 200, body: body}} ->
+        case Jason.decode(body) do
+          {:ok, body} -> {:ok, body}
+          {:error, reason} -> {:error, "Cannot decode json: #{inspect(reason)}"}
+        end
+
+      {:ok, %Finch.Response{status: status_code}} ->
+        {:error, "Unexpected response #{status_code}"}
+
+      {:error, error} ->
+        {:error, error}
+    end
+  end
+
   @spec login :: {:error, String.t() | Finch.Error.t()} | {:ok, map()}
   def login do
     url = "https://www.life360.com/v3/oauth2/token"
@@ -18,18 +36,9 @@ defmodule PenguinNodes.Nodes.Life360.Helpers do
 
     payload = "username=#{username}&password=#{password}&grant_type=password"
 
-    response = Finch.build(:post, url, headers, payload) |> Finch.request(PenguinNodes.Finch)
-
-    case response do
-      {:ok, %Finch.Response{status: 200, body: body}} ->
-        {:ok, Jason.decode!(body)}
-
-      {:ok, %Finch.Response{status: status_code}} ->
-        {:error, "Unexpected response #{status_code}"}
-
-      {:error, error} ->
-        {:error, error}
-    end
+    Finch.build(:post, url, headers, payload)
+    |> Finch.request(PenguinNodes.Finch)
+    |> process_response()
   end
 
   @spec list_circles(login :: map()) :: {:error, String.t() | Finch.Error.t()} | {:ok, map()}
@@ -42,18 +51,9 @@ defmodule PenguinNodes.Nodes.Life360.Helpers do
       {"authorization", "Bearer #{token}"}
     ]
 
-    response = Finch.build(:get, url, headers) |> Finch.request(PenguinNodes.Finch)
-
-    case response do
-      {:ok, %Finch.Response{status: 200, body: body}} ->
-        {:ok, Jason.decode!(body)}
-
-      {:ok, %Finch.Response{status: status_code}} ->
-        {:error, "Unexpected response #{status_code}"}
-
-      {:error, error} ->
-        {:error, error}
-    end
+    Finch.build(:get, url, headers)
+    |> Finch.request(PenguinNodes.Finch)
+    |> process_response()
   end
 
   @spec get_circle_info(login :: map(), circle :: map()) ::
@@ -68,17 +68,8 @@ defmodule PenguinNodes.Nodes.Life360.Helpers do
       {"authorization", "Bearer #{token}"}
     ]
 
-    response = Finch.build(:get, url, headers) |> Finch.request(PenguinNodes.Finch)
-
-    case response do
-      {:ok, %Finch.Response{status: 200, body: body}} ->
-        {:ok, Jason.decode!(body)}
-
-      {:ok, %Finch.Response{status: status_code}} ->
-        {:error, "Unexpected response #{status_code}"}
-
-      {:error, error} ->
-        {:error, error}
-    end
+    Finch.build(:get, url, headers)
+    |> Finch.request(PenguinNodes.Finch)
+    |> process_response()
   end
 end
