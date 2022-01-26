@@ -10,7 +10,7 @@ jobs:
     uses: brianmay/workflows/.github/workflows/elixir.yaml@816bc3cdbc1e381ff95dc5f4dd7cd32062290791
     with:
       mix_cache_postfix: ""
-      plts_cache_postfix: "-1"
+      plts_cache_postfix: "-2"
 
   push:
     name: Push
